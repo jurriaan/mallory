@@ -11,7 +11,7 @@ Signal.trap("TERM") { puts "Gracefully exiting"; EventMachine.stop }
 EM.kqueue if EM.kqueue? #osx
 EM.epoll  if EM.epoll? #linux
 
-module EventMachine
+module Mitm
   class Connection < EM::Connection
 
     def debug msg
@@ -152,27 +152,6 @@ module EventMachine
   end
 end
 
-options = {}
-OptionParser.new do |opts|
-  opts.banner = "Usage: proxybalancer [options]"
-
-  opts.on("-l", "--listen PORT", Integer, "Port to listen on (default 9999)") do |v|
-    options[:listen] = v
-  end
-
-  opts.on("-ct", "--connect-timeout SECONDS", Integer, "Proxy connect timeout (default 2s)") do |v|
-    options[:ct] = v
-  end
-
-  opts.on("-it", "--inactivity-timeout SECONDS", Integer, "Proxy inactivity timeout (default 2s)") do |v|
-    options[:it] = v
-  end
-
-  opts.on("-v", "--verbose", "Run in debug mode") do |v|
-    options[:verbose] = v
-  end
-end.parse!
-
 module EventMachine
   class MitmProxy
     def initialize options
@@ -189,10 +168,8 @@ module EventMachine
     def start!
       EventMachine.run {
         report "Starting proxy balancer"
-        EventMachine.start_server '127.0.0.1', @listen, EventMachine::Connection, @ct, @it, @verbose
+        EventMachine.start_server '127.0.0.1', @listen, Mitm::Connection, @ct, @it, @verbose
       }
     end
   end
 end
-
-EventMachine::MitmProxy.new(options).start!
