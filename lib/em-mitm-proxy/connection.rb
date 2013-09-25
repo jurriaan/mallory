@@ -5,29 +5,21 @@ require 'redis'
 
 module Mitm
   class Connection < EM::Connection
-
-    def debug msg
-      report msg if @verbose
-    end
-
-    def report msg
-      puts "#{Time.now.strftime("%F %T.%L")} - ##{@id}: #{msg}"
-    end
-
-    def initialize ct, it, verbose
+    def initialize(ct, it, verbose, backend = Mitm::Backend.default)
+      @logger = Mitm::Logger.instance
       @verbose = verbose
-      @ct = ct
-      @it = it
-      @id = SecureRandom.hex[0,6]
+      @connect_timeout = ct
+      @inactivity_timeout = it
+      @id = SecureRandom.hex[0, 6]
       @start = Time.now
       @secure = false
       @proto = "http"
       @retries = 0
-      @backend = Mitm::Backend::Redis.new("127.0.0.1", 6379)
+      @backend = backend
     end
 
     def throw_error
-      debug "Failure in #{Time.now-@start}s (#{@retries} attempts)"
+      @logger.debug "Failure in #{Time.now-@start}s (#{@retries} attempts)"
       send_data "HTTP/1.1 500 Internal Server Error\nContent-Type: text/html\nConnection: close\n\n"
       close_connection_after_writing
     end
@@ -35,14 +27,14 @@ module Mitm
     def try_proxy(method, uri, request_headers, body = '')
       @retries+=1
       proxy = @backend.any
-      debug "Attempt #{@retries} - #{method.upcase} #{uri} via #{proxy}"
+      @logger.debug "Attempt #{@retries} - #{method.upcase} #{uri} via #{proxy}"
       if @retries > 10
         throw_error 
         return false
       end
       options = {
-        :connect_timeout => @ct,
-        :inactivity_timeout => @it,
+        :connect_timeout => @connect_timeout,
+        :inactivity_timeout => @inactivity_timeout,
         :proxy => {
         :host => proxy.split(':')[0],
         :port => proxy.split(':')[1]
@@ -56,13 +48,13 @@ module Mitm
       begin
         http = EventMachine::HttpRequest.new(uri, options).get request_params
         http.errback { 
-          debug "Attempt #{@retries} - Failed"
+          @logger.debug "Attempt #{@retries} - Failed"
           try_proxy(method, uri, request_headers, body)
         }
         http.callback {
-          debug "Attempt #{@retries} - Success"
+          @logger.debug "Attempt #{@retries} - Success"
           if http.response_header.status > 400
-            debug "#{http.response_header.status} > 400"
+            @logger.debug "#{http.response_header.status} > 400"
             try_proxy(method, uri, request_headers, body) 
           else
             send_data "HTTP/1.1 #{http.response_header.status} #{http.response_header.http_reason}\n"
@@ -82,15 +74,16 @@ module Mitm
               headers.delete("Transfer-encoding: chunked")
               headers.select { |r| /^X-|^Vary|^Via|^Server/ =~ r }.each {|r| headers.delete(r)}
               headers << "Content-Length: #{http.response.length}"
-            rescue 
+            rescue
+
             end
             headers << "Connection: close"
             send_data headers.join("\n")
             send_data "\r\n\r\n"
-            debug "Send content #{http.response.length} bytes"
+            @logger.debug "Send content #{http.response.length} bytes"
             send_data http.response
             close_connection_after_writing
-            report "Success (#{Time.now-@start}s, #{@retries} attempts)"
+            @logger.report "Success (#{Time.now-@start}s, #{@retries} attempts)"
           end
         }
       rescue
@@ -98,16 +91,16 @@ module Mitm
     end
 
     def ssl_handshake_completed
-      debug "Secure connection intercepted"
+      @logger.debug "Secure connection intercepted"
       @secure = true
     end
 
     def post_init
-      debug "Start connection"
+      @logger.debug "Start connection"
     end
 
     def unbind(reason=nil)
-      debug "Close connection #{reason}"
+      @logger.debug "Close connection #{reason}"
     end
 
     def parse data
@@ -120,7 +113,7 @@ module Mitm
         request_headers = {}
         req.each { |head| request_headers[head] = req[head] }
       rescue => e
-        debug e.message
+        @logger.debug e.message
         throw_error
       else
         {:request => req, :headers => request_headers}

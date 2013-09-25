@@ -13,8 +13,8 @@ module EventMachine
     def initialize options
       @listen = options.delete(:listen) || 9999
       @verbose = options.delete(:verbose) || false
-      @ct = options.delete(:ct) || 2
-      @it = options.delete(:it) || 2
+      @connect_timeout = options.delete(:connect_timeout) || 2
+      @inactivity_timeout = options.delete(:inactivity_timeout) || 2
     end
 
     def report msg
@@ -24,7 +24,7 @@ module EventMachine
     def start!
       EventMachine.run {
         report "Starting proxy balancer"
-        EventMachine.start_server '127.0.0.1', @listen, Mitm::Connection, @ct, @it, @verbose
+        EventMachine.start_server '127.0.0.1', @listen, Mitm::Connection, @connect_timeout, @inactivity_timeout, @verbose
       }
     end
   end
