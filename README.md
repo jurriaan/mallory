@@ -9,7 +9,7 @@ Proxy list is provided by external backend (ActiveRecord model, Redis set) and i
 
 ```bash
 ./keys/keygen.sh
-./bin/mitmproxy -v -l 9999
+bundle exec ./bin/mitmproxy -v -l 9999
 ```
 
 ```bash

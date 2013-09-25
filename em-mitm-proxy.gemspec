@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Marcin Sawicki"]
   s.email       = ["odcinek@gmail.com"]
   s.homepage    = "http://github.com/odcinek/em-mitm-proxy"
-  s.summary     = "Man-in-the-middle http/https transparent http (CONNECT) proxy over bunch of (unreliable) backend proxies"
+  s.summary     = "Man-in-the-middle http/https transparent http (CONNECT) proxy over bunch of (unreliable) backends"
   s.description = s.summary
 
   s.rubyforge_project = "em-mitm-proxy"
