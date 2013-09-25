@@ -21,7 +21,7 @@ phantomjs --debug=yes --ignore-ssl-errors=yes --ssl-protocol=sslv2 --proxy=127.0
 - General purpose proxying daemon
 - General purpose proxy load balancer
 - Anything general purpose really
-- For general purpose mitm solution see http://mitmproxy.org/
+- For general purpose mitm solution (in Python) see [mitmproxy](https://github.com/mitmproxy/mitmproxy)
 
 ### Resources
 
