@@ -1,7 +1,7 @@
 ## em-mitm-proxy
 
 Man-in-the-middle http/https transparent http (CONNECT) proxy over bunch of (unreliable) backends.
-It is intended to be used for running test suits / scapers. It basically shields the proxied application from low responsiveness / poor reliability of underlying proxies.
+It is intended to be used for running test suits / scrapers. It basically shields the proxied application from low responsiveness / poor reliability of underlying proxies.
 
 Proxy list is provided by external backend (ActiveRecord model, Redis set) and is refreshed periodically. Original use case involves separate proxy-gathering daemon (out of the scope of this project).
 
