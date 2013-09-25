@@ -1,7 +1,7 @@
-#!/usr/bin/env ruby
-require 'bundler/setup'
-Bundler.require
 require 'webrick'
+require 'eventmachine'
+require 'em-http-request'
+require 'redis'
 
 $stdout.sync = true
 
@@ -31,8 +31,7 @@ module Mitm
       @secure = false
       @proto = "http"
       @retries = 0
-      @redis = Redis.new(:host => "127.0.0.1", :port => 6379)
-      @proxies=@redis.smembers("good_proxies")
+      @backend = Mitm::Backend::Redis.new("127.0.0.1", 6379)
     end
 
     def throw_error
@@ -43,7 +42,7 @@ module Mitm
 
     def try_proxy(method, uri, request_headers, body = '')
       @retries+=1
-      proxy = @proxies.sample
+      proxy = @backend.any
       debug "Attempt #{@retries} - #{method.upcase} #{uri} via #{proxy}"
       if @retries > 10
         throw_error 
@@ -63,45 +62,45 @@ module Mitm
         request_params = {:head => request_headers}
       end
       begin
-      http = EventMachine::HttpRequest.new(uri, options).get request_params
-      http.errback { 
-        debug "Attempt #{@retries} - Failed"
-        try_proxy(method, uri, request_headers, body)
-      }
-      http.callback {
-        debug "Attempt #{@retries} - Success"
-        if http.response_header.status > 400
-          debug "#{http.response_header.status} > 400"
-          try_proxy(method, uri, request_headers, body) 
-        else
-          send_data "HTTP/1.1 #{http.response_header.status} #{http.response_header.http_reason}\n"
-          headers = []
-          begin
-            http.response_header.each do |hh| 
-              hname = "#{hh[0].downcase.capitalize.gsub('_','-')}"
-              if hh[1].instance_of?(Array)
-                hh[1].each do |xx|
-                  headers << "#{hname}: #{xx}"
+        http = EventMachine::HttpRequest.new(uri, options).get request_params
+        http.errback { 
+          debug "Attempt #{@retries} - Failed"
+          try_proxy(method, uri, request_headers, body)
+        }
+        http.callback {
+          debug "Attempt #{@retries} - Success"
+          if http.response_header.status > 400
+            debug "#{http.response_header.status} > 400"
+            try_proxy(method, uri, request_headers, body) 
+          else
+            send_data "HTTP/1.1 #{http.response_header.status} #{http.response_header.http_reason}\n"
+            headers = []
+            begin
+              http.response_header.each do |hh| 
+                hname = "#{hh[0].downcase.capitalize.gsub('_','-')}"
+                if hh[1].instance_of?(Array)
+                  hh[1].each do |xx|
+                    headers << "#{hname}: #{xx}"
+                  end
+                elsif hh[1].instance_of?(Array)
+                  headers << "#{xx}: #{hh[1]}"
                 end
-              elsif hh[1].instance_of?(Array)
-                headers << "#{xx}: #{hh[1]}"
               end
+              headers.delete("Connection: keep-alive")
+              headers.delete("Transfer-encoding: chunked")
+              headers.select { |r| /^X-|^Vary|^Via|^Server/ =~ r }.each {|r| headers.delete(r)}
+              headers << "Content-Length: #{http.response.length}"
+            rescue 
             end
-            headers.delete("Connection: keep-alive")
-            headers.delete("Transfer-encoding: chunked")
-            headers.select { |r| /^X-|^Vary|^Via|^Server/ =~ r }.each {|r| headers.delete(r)}
-            headers << "Content-Length: #{http.response.length}"
-          rescue 
+            headers << "Connection: close"
+            send_data headers.join("\n")
+            send_data "\r\n\r\n"
+            debug "Send content #{http.response.length} bytes"
+            send_data http.response
+            close_connection_after_writing
+            report "Success (#{Time.now-@start}s, #{@retries} attempts)"
           end
-          headers << "Connection: close"
-          send_data headers.join("\n")
-          send_data "\r\n\r\n"
-          debug "Send content #{http.response.length} bytes"
-          send_data http.response
-          close_connection_after_writing
-          report "Success (#{Time.now-@start}s, #{@retries} attempts)"
-        end
-      }
+        }
       rescue
       end
     end

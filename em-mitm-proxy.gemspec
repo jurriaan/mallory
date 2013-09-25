@@ -15,6 +15,8 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "em-mitm-proxy"
 
   s.add_dependency "eventmachine", ">= 1.0.0.beta.4"
+  s.add_dependency "redis"
+  s.add_dependency "em-http-request"
   s.add_development_dependency "rspec"
   s.add_development_dependency "rake"
 
