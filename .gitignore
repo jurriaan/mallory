@@ -3,3 +3,6 @@ pkg/*
 .bundle
 Gemfile.lock
 sbin
+keys/*.crt
+keys/*.key
+keys/*.csr
