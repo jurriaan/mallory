@@ -1,8 +1,3 @@
-=begin
-BTW, zerknij sobie na klasę Logger w stdlib, można z niej zrobić
-singletona w ten sam sposób, żeby trzymać globalnie konfigurację
-(jak format stringa, itd.)
-=end
 module Mitm
   class Logger
     TIME_FORMAT = "%F %T.%L"
@@ -18,7 +13,7 @@ module Mitm
     end
 
     def report msg
-      puts $stdout, "#{Time.now.strftime(TIME_FORMAT)} - ##{@id}: #{msg}"
+      puts "#{Time.now.strftime(TIME_FORMAT)} - ##{@id}: #{msg}"
     end
   end
 end

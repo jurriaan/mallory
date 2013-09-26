@@ -7,7 +7,7 @@ module Mitm
   class Connection < EM::Connection
     def initialize(ct, it, verbose, backend)
       @logger = Mitm::Logger.instance
-      @verbose = verbose
+      @logger.verbose = true if verbose
       @connect_timeout = ct
       @inactivity_timeout = it
       @id = SecureRandom.hex[0, 6]
