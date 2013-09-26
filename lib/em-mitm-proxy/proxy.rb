@@ -61,35 +61,16 @@ module Mitm
         }
         http.callback {
           @logger.debug "Attempt #{@retries} - Success"
-          if http.response_header.status > 400
-            @logger.debug "#{http.response_header.status} > 400"
+          response = Response.new(http)
+          if response.status > 400
+            @logger.debug "#{response.status} > 400"
             resubmit
           else
-            send_data "HTTP/1.1 #{http.response_header.status} #{http.response_header.http_reason}\n"
-            headers = []
-            begin
-              http.response_header.each do |hh| 
-                hname = "#{hh[0].downcase.capitalize.gsub('_','-')}"
-                if hh[1].instance_of?(Array)
-                  hh[1].each do |xx|
-                    headers << "#{hname}: #{xx}"
-                  end
-                elsif hh[1].instance_of?(Array)
-                  headers << "#{xx}: #{hh[1]}"
-                end
-              end
-              headers.delete("Connection: keep-alive")
-              headers.delete("Transfer-encoding: chunked")
-              headers.select { |r| /^X-|^Vary|^Via|^Server/ =~ r }.each {|r| headers.delete(r)}
-              headers << "Content-Length: #{http.response.length}"
-            rescue
-
-            end
-            headers << "Connection: close"
-            send_data headers.join("\n")
+            send_data "HTTP/1.1 #{response.status} #{response.description}\n"
+            send_data response.headers
             send_data "\r\n\r\n"
-            @logger.debug "Send content #{http.response.length} bytes"
-            send_data http.response
+            send_data response.body
+            @logger.debug "Send content #{response.body.length} bytes"
             @logger.report "Success (#{Time.now-Time.now}s, #{@retries} attempts)"
           end
           self.succeed
