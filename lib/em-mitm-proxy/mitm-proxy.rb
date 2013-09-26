@@ -15,6 +15,7 @@ module EventMachine
       @verbose = options.delete(:verbose) || false
       @connect_timeout = options.delete(:connect_timeout) || 2
       @inactivity_timeout = options.delete(:inactivity_timeout) || 2
+      @backend = Mitm::Backend::Redis.new("127.0.0.1", 6379)
     end
 
     def report msg
@@ -24,7 +25,7 @@ module EventMachine
     def start!
       EventMachine.run {
         report "Starting proxy balancer"
-        EventMachine.start_server '127.0.0.1', @listen, Mitm::Connection, @connect_timeout, @inactivity_timeout, @verbose
+        EventMachine.start_server '127.0.0.1', @listen, Mitm::Connection, @connect_timeout, @inactivity_timeout, @verbose, @backend
       }
     end
   end

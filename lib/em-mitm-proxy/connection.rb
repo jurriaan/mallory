@@ -5,7 +5,7 @@ require 'redis'
 
 module Mitm
   class Connection < EM::Connection
-    def initialize(ct, it, verbose, backend = Mitm::Backend.default)
+    def initialize(ct, it, verbose, backend)
       @logger = Mitm::Logger.instance
       @verbose = verbose
       @connect_timeout = ct
