@@ -35,7 +35,7 @@ mp.start!
 - General purpose proxying daemon
 - General purpose proxy load balancer
 - Anything general purpose really
-- For mature general purpose mitm solution (in Python) see [mallory](https://github.com/mallory/mallory)
+- For mature general purpose mitm solution (in Python) see [mitmproxy](https://github.com/mitmproxy/mitmproxy)
 
 ## TODO
 - CA support
