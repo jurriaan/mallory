@@ -5,13 +5,13 @@ It is intended to be used for running test suits / scrapers. It basically shield
 
 Proxy list is provided by external backend (ActiveRecord model, Redis set) and is refreshed periodically. Original use case involves separate proxy-gathering daemon (out of the scope of this project).
 
-For the mitmproxy to work properly client certificate validation needs to be turned off.
+For the mallory to work properly client certificate validation needs to be turned off.
 
 ### Example usage
 
 ```bash
 ./keys/keygen.sh
-bundle exec ./bin/mitmproxy -v -l 9999
+bundle exec ./bin/mallory -v -l 9999
 ```
 
 ```bash
@@ -23,7 +23,7 @@ phantomjs --debug=yes --ignore-ssl-errors=yes --ssl-protocol=sslv2 --proxy=127.0
 - General purpose proxying daemon
 - General purpose proxy load balancer
 - Anything general purpose really
-- For mature general purpose mitm solution (in Python) see [mitmproxy](https://github.com/mitmproxy/mitmproxy)
+- For mature general purpose mitm solution (in Python) see [mallory](https://github.com/mallory/mallory)
 
 ### TODO
 - CA support
