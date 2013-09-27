@@ -10,10 +10,10 @@ module EventMachine
       end
 
       def debug msg
-        report msg if @verbose
+        info msg if @verbose
       end
 
-      def report msg
+      def info msg
         puts "#{Time.now.strftime(TIME_FORMAT)} - #{msg}"
       end
     end

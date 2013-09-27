@@ -75,7 +75,7 @@ module EventMachine
             send_data "\r\n\r\n"
             send_data response.body
             @logger.debug "Send content #{response.body.length} bytes"
-            @logger.report "Success (#{Time.now-Time.now}s, #{@retries} attempts)"
+            @logger.info "Success (#{Time.now-Time.now}s, #{@retries} attempts)"
           end
           self.succeed
         }

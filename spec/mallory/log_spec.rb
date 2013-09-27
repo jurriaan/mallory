@@ -26,7 +26,7 @@ describe EventMachine::Mallory::Logger do
 
   it "logs without debug" do
     out = capture_stdout do
-      logger.report "Some text"
+      logger.info "Some text"
       logger.debug "Some other text"
     end
     expect(out.string).to match(/.*Some text$/)
@@ -34,7 +34,7 @@ describe EventMachine::Mallory::Logger do
 
   it "logs with debug" do
     out = capture_stdout do
-      debug_logger.report "Some text"
+      debug_logger.info "Some text"
       debug_logger.debug "Some other text"
     end
     expect(out.string).to match(/.*Some text.*Some other text$/m)

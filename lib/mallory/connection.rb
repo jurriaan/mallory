@@ -29,7 +29,7 @@ module EventMachine
       end
 
       def error
-        @logger.report "Failure in #{Time.now-@start}s"
+        @logger.info "Failure in #{Time.now-@start}s"
         send_data "HTTP/1.1 500 Internal Server Error\nContent-Type: text/html\nConnection: close\n\n"
         close_connection_after_writing
       end
