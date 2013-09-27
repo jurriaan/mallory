@@ -11,10 +11,9 @@ Gem::Specification.new do |s|
   s.homepage    = "http://github.com/odcinek/mallory"
   s.summary     = "Man-in-the-middle http/https transparent http (CONNECT) proxy over bunch of (unreliable) backends"
   s.description = s.summary
+  s.license = "MIT"
 
-  s.rubyforge_project = "mallory"
-
-  s.add_dependency "eventmachine", ">= 1.0.0.beta.4"
+  s.add_dependency "eventmachine", "1.0.3"
   s.add_dependency "redis"
   s.add_dependency "em-http-request"
   s.add_development_dependency "rspec"

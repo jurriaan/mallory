@@ -16,6 +16,10 @@ OptionParser.new do |opts|
     options[:listen] = v
   end
 
+  opts.on("-b", "--backend BACKEND", String, "Backend to use (default 'file://proxies.txt')") do |v|
+    options[:listen] = v
+  end
+
   opts.on("-ct", "--connect-timeout SECONDS", Integer, "Proxy connect timeout (default 2s)") do |v|
     options[:ct] = v
   end

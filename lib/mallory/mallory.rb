@@ -16,11 +16,15 @@ module EventMachine
         @verbose = options.delete(:verbose) || false
         @connect_timeout = options.delete(:connect_timeout) || 2
         @inactivity_timeout = options.delete(:inactivity_timeout) || 2
-        @backend = Mallory::Backend::Redis.new("127.0.0.1", 6379)
+        @backend = Mallory::Backend::File.new("./proxies.txt")
       end
 
       def report msg
         puts "#{Time.now.strftime("%F %T.%L")} - #{msg}"
+      end
+
+      def backend backend
+        @backend = Mallory::Backend::Redis.new("127.0.0.1", 6379)
       end
 
       def start!
