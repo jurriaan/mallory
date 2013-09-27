@@ -5,14 +5,17 @@ module EventMachine
 
         def initialize(filename)
           @proxies = []
-          lines = ::File.readlines(filename) 
-          raise("No proxies found") if lines.nil?
+          begin
+            lines = ::File.readlines(filename) 
+            raise if lines.nil?
+          rescue
+            raise("Proxy file missing or empty")
+          end
           lines.each do |line|
             if line.match(/.*:\d{2,6}/)
               @proxies << line 
             else raise("Wrong format") end
           end
-          raise("No proxies found") if @proxies.empty?
         end
 
         def any

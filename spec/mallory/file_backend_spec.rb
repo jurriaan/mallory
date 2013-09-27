@@ -17,12 +17,17 @@ describe EventMachine::Mallory::Backend::File do
 
   it "should raise on empty file" do
     File.should_receive(:readlines).with("proxies.txt")
-    expect {EventMachine::Mallory::Backend::File.new("proxies.txt")}.to raise_error("No proxies found")
+    expect {EventMachine::Mallory::Backend::File.new("proxies.txt")}.to raise_error("Proxy file missing or empty")
   end
 
   it "should raise on wrong format" do
     File.should_receive(:readlines).with("proxies.txt").and_return(["wr0ng:f0rm4t"])
     expect {EventMachine::Mallory::Backend::File.new("proxies.txt")}.to raise_error("Wrong format")
+  end
+
+  it "should raise on missing file" do 
+    File.should_receive(:readlines).with("proxies.txt").and_raise(Errno::ENOENT)
+    expect {EventMachine::Mallory::Backend::File.new("proxies.txt")}.to raise_error("Proxy file missing or empty")
   end
 
 end

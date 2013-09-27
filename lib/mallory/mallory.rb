@@ -29,7 +29,7 @@ module EventMachine
 
       def start!
         EventMachine.run {
-          report "Starting proxy balancer"
+          report "Starting mallory"
           EventMachine.start_server '127.0.0.1', @listen, EventMachine::Mallory::Connection, @connect_timeout, @inactivity_timeout, @verbose, @backend
         }
       end
