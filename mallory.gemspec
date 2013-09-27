@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency "em-http-request"
   s.add_development_dependency "rspec"
   s.add_development_dependency "sinatra"
+  s.add_development_dependency "sinatra-contrib"
   s.add_development_dependency "thin"
   s.add_development_dependency "rake"
 

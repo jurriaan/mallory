@@ -21,8 +21,9 @@ module EventMachine
       def headers
         headers = []
         @http.response_header.each do |header| 
+          next if header[0].match(/^X_|^VARY|^VIA|^SERVER|^TRANSFER_ENCODING|^CONNECTION/)
           header_name = "#{header[0].downcase.capitalize.gsub('_','-')}"
-          case header[1].class
+          case header[1]
           when Array
             header[1].each do |header_value|
               headers << "#{header_name}: #{header_value}"
@@ -31,10 +32,6 @@ module EventMachine
             headers << "#{header_name}: #{header[1]}"
           end
         end
-        headers.delete("Connection: keep-alive")
-        headers.delete("Transfer-encoding: chunked")
-        headers.select { |r| /^X-|^Vary|^Via|^Server/ =~ r }.each {|r| headers.delete(r)}
-        headers << "Content-Length: #{@http.response.length}"
         headers << "Connection: close"
         return headers.join("\n")
       end
