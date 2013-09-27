@@ -3,8 +3,9 @@ require 'mallory/connection'
 
 describe EventMachine::Mallory::Connection do
 
-  it 'should 1' do
-
+=begin
+  it 'should' do
   end
+=end
 
 end
