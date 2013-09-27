@@ -4,6 +4,12 @@ class Responder < Sinatra::Base
 
   set :protection, false
 
+  get '/200' do
+    status 200
+    headers "Server" => "Teapot Server"
+    "OK"
+  end
+
   get '/418' do
     status 418
     headers "Allow"  => "POST, GET, HEAD, PUT, DELETE, CONNECT",

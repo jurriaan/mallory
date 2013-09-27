@@ -13,6 +13,8 @@ describe EventMachine::Mallory::Response do
     web = Thin::Server.new(Responder, '127.0.0.1', 6701)
     web.silent = true
     web.start
+    sleep 5
+    p web.running?
   end
 
   after(:all) do
@@ -21,11 +23,16 @@ describe EventMachine::Mallory::Response do
 
   it "should 1" do
     options = {}
-    http = EventMachine::HttpRequest.new("http://localhost:6701/500", options).get
+    http = EventMachine::HttpRequest.new("http://127.0.0.1:6701/200", options).get
     http.callback {
+      p "SUCCESS"
       p http.response_header.status
       p http.response_header
       p http.response
+    }
+    http.errback {
+      p "ERRBACK"
+      p http.error
     }
   end
 
