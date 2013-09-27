@@ -1,10 +1,10 @@
 require 'spec_helper'
-require 'em-mitm-proxy/logger'
+require 'mallory/logger'
 
-describe Mitm::Logger do
-  let(:logger) {Mitm::Logger.instance}
+describe Mallory::Logger do
+  let(:logger) {Mallory::Logger.instance}
   let(:debug_logger) do 
-    debug_logger = Mitm::Logger.instance
+    debug_logger = Mallory::Logger.instance
     debug_logger.verbose = true
     debug_logger
   end
@@ -19,8 +19,8 @@ describe Mitm::Logger do
   end
 
   it "creates logger singleton" do
-    logger1 = Mitm::Logger.instance
-    logger2 = Mitm::Logger.instance
+    logger1 = Mallory::Logger.instance
+    logger2 = Mallory::Logger.instance
     expect(logger1).to be(logger2)
   end
 

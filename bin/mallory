@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
+
+require 'mallory'
+require 'optparse'
+
+#ARGV << '--help' if ARGV.empty?
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: proxybalancer [options]"
+
+  opts.on("-l", "--listen PORT", Integer, "Port to listen on (default 9999)") do |v|
+    options[:listen] = v
+  end
+
+  opts.on("-ct", "--connect-timeout SECONDS", Integer, "Proxy connect timeout (default 2s)") do |v|
+    options[:ct] = v
+  end
+
+  opts.on("-it", "--inactivity-timeout SECONDS", Integer, "Proxy inactivity timeout (default 2s)") do |v|
+    options[:it] = v
+  end
+
+  opts.on("-v", "--verbose", "Run in debug mode") do |v|
+    options[:verbose] = v
+  end
+end.parse!
+
+EventMachine::Mallory::Proxy.new(options).start!

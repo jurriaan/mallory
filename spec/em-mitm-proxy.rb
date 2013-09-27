@@ -1,4 +1,4 @@
 require 'spec_helper'
-require 'em-mitm-proxy'
+require 'mallory'
 options = {:listen => 6701}
-EventMachine::MitmProxy.new(options).start!
+EventMachine::Mallory.new(options).start!

@@ -1,4 +1,4 @@
-## em-mitm-proxy
+## mallory
 
 Man-in-the-middle http/https transparent http (CONNECT) proxy over bunch of (unreliable) backends.
 It is intended to be used for running test suits / scrapers. It basically shields the proxied application from low responsiveness / poor reliability of underlying proxies.
@@ -19,7 +19,7 @@ curl --insecure --proxy 127.0.0.1:9999 https://www.dropbox.com/login
 phantomjs --debug=yes --ignore-ssl-errors=yes --ssl-protocol=sslv2 --proxy=127.0.0.1:9999 --proxy-type=http hello.js
 ```
 
-### What em-mitm-proxy is not
+### What mallory is not
 - General purpose proxying daemon
 - General purpose proxy load balancer
 - Anything general purpose really

@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'em-mitm-proxy/connection'
+require 'mallory/connection'
 
-describe Mitm::Connection do
+describe Mallory::Connection do
 
   it 'should' do
 

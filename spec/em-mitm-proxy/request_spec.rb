@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'em-mitm-proxy/request'
+require 'mallory/request'
 
-describe "Mitm::Request" do
+describe "Mallory::Request" do
 
   methods = ['GET', 'POST', 'HEAD', 'PUT', 'CONNECT', 'DELETE']
 
@@ -27,7 +27,7 @@ describe "Mitm::Request" do
           #{method} #{request[:path]} HTTP/1.1
           Host: #{request[:host]}
         HTTP
-        rq = Mitm::Request.new(body)
+        rq = Mallory::Request.new(body)
         rq.method.should eq(method.downcase)
         rq.body.should be(nil)
       end
@@ -41,7 +41,7 @@ describe "Mitm::Request" do
           #{method} #{request[:path]} HTTP/1.1
           Host: #{request[:host]}
         HTTP
-        expect { Mitm::Request.new(body) }.to raise_error
+        expect { Mallory::Request.new(body) }.to raise_error
       end
     end
   end
