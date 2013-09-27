@@ -65,7 +65,7 @@ module EventMachine
         }
         http.callback {
           @logger.debug "Attempt #{@retries} - Success"
-          response = Response.new(http)
+          response = EventMachine::Mallory::Response.new(http)
           if response.status > 400
             @logger.debug "#{response.status} > 400"
             resubmit

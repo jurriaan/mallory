@@ -19,8 +19,3 @@ class Responder < Sinatra::Base
   end
 
 end
-
-Rack::Handler::WEBrick.run(
-  Responder.new,
-  :Port => 6700
-)

@@ -8,11 +8,12 @@ module EventMachine
           begin
             lines = ::File.readlines(filename) 
             raise if lines.nil?
+            raise if lines.empty?
           rescue
             raise("Proxy file missing or empty")
           end
           lines.each do |line|
-            if line.match(/.*:\d{2,6}/)
+            if line.strip.match(/.*:\d{2,6}/)
               @proxies << line 
             else raise("Wrong format") end
           end
