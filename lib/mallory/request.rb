@@ -5,7 +5,9 @@ module EventMachine
     class Request
 
       attr_accessor :protocol
+
       def initialize data
+        @logger = EventMachine::Mallory::Logger.instance
         line = data.match(/([A-Z]{3,8})\s(?:(http\w*):\/\/)*(?:(\w*):*(\d{2,5})*)(\/{0,1}.*)\sHTTP/)
         method = line[1]
         @protocol = "http"

@@ -5,17 +5,13 @@ require 'redis'
 module EventMachine
   module Mallory
     class Connection < EM::Connection
-      def initialize(ct, it, verbose, backend)
+      def initialize(ct, it)
         @logger = EventMachine::Mallory::Logger.instance
-        @logger.verbose = true if verbose
         @connect_timeout = ct
         @inactivity_timeout = it
-        @id = SecureRandom.hex[0, 6]
         @start = Time.now
         @secure = false
         @proto = "http"
-        @retries = 0
-        @backend = backend
       end
 
       def ssl_handshake_completed # EM::Connection
@@ -32,7 +28,7 @@ module EventMachine
       end
 
       def error
-        @logger.debug "Failure in #{Time.now-@start}s (#{@retries} attempts)"
+        @logger.debug "Failure in #{Time.now-@start}s"
         send_data "HTTP/1.1 500 Internal Server Error\nContent-Type: text/html\nConnection: close\n\n"
         close_connection_after_writing
       end

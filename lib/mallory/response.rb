@@ -3,6 +3,7 @@ module EventMachine
     class Response
 
       def initialize http
+        @logger = EventMachine::Mallory::Logger.instance
         @http = http
       end
 

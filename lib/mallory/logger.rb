@@ -14,7 +14,7 @@ module EventMachine
       end
 
       def report msg
-        puts "#{Time.now.strftime(TIME_FORMAT)} - ##{@id}: #{msg}"
+        puts "#{Time.now.strftime(TIME_FORMAT)} - #{msg}"
       end
     end
   end
