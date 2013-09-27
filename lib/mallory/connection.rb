@@ -5,12 +5,13 @@ require 'redis'
 module EventMachine
   module Mallory
     class Connection < EM::Connection
-      def initialize(ct, it)
+      def initialize(backend, ct, it)
         @logger = EventMachine::Mallory::Logger.instance
         @connect_timeout = ct
         @inactivity_timeout = it
         @start = Time.now
         @secure = false
+        @backend = backend
         @proto = "http"
       end
 
@@ -28,7 +29,7 @@ module EventMachine
       end
 
       def error
-        @logger.debug "Failure in #{Time.now-@start}s"
+        @logger.report "Failure in #{Time.now-@start}s"
         send_data "HTTP/1.1 500 Internal Server Error\nContent-Type: text/html\nConnection: close\n\n"
         close_connection_after_writing
       end
