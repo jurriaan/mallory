@@ -6,3 +6,4 @@ sbin
 keys/*.crt
 keys/*.key
 keys/*.csr
+proxies.txt

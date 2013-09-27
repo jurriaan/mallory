@@ -1,60 +1,64 @@
 require 'eventmachine'
 require 'em-http-request'
 
-module Mallory
-  class Proxy
+module EventMachine
+  module Mallory
+    class Proxy
 
-    include EventMachine::Deferrable
+      include EventMachine::Deferrable
 
-    def initialize(backend)
-      @retries = 0
-      @logger = Mallory::Logger.instance
-      @backend = backend
-      @response = ''
-    end
-
-    def resubmit
-      @proxy = @backend.any
-      submit
-    end
-
-    def perform request
-      @method = request.method.to_s
-      @uri = request.uri
-      @request_headers = request.headers
-      @body = request.body || ''
-      resubmit
-    end
-
-    def send_data data
-      @response << data
-    end
-
-    def response
-      @response
-    end
-
-    def submit
-      @retries+=1
-      @logger.debug "Attempt #{@retries} - #{@method.upcase} #{@uri} via #{@proxy}"
-      if @retries > 10
-        self.fail
+      def initialize(backend)
+        @retries = 0
+        @logger = EventMachine::Mallory::Logger.instance
+        @backend = backend
+        @response = ''
       end
-      options = {
-        :connect_timeout => @connect_timeout,
-        :inactivity_timeout => @inactivity_timeout,
-        :proxy => {
-        :host => @proxy.split(':')[0],
-        :port => @proxy.split(':')[1]
-      }
-      }
-      if [:post, :put].include?(@method) 
-        request_params = {:head => @headers, :body => @body}
-      else
-        request_params = {:head => @headers}
+
+      def resubmit
+        @proxy = @backend.any
+        submit
       end
-      begin
-        http = EventMachine::HttpRequest.new(@uri, options).get request_params
+
+      def perform request
+        @method = request.method.to_s
+        @uri = request.uri
+        @request_headers = request.headers
+        @body = request.body || ''
+        resubmit
+      end
+
+      def send_data data
+        @response << data
+      end
+
+      def response
+        @response
+      end
+
+      def options
+        {
+          :connect_timeout => @connect_timeout,
+          :inactivity_timeout => @inactivity_timeout,
+          :proxy => {
+          :host => @proxy.split(':')[0],
+          :port => @proxy.split(':')[1]
+        }
+        }
+      end
+
+      def submit
+        @retries+=1
+        if @retries > 10
+          fail
+          return
+        end
+        @logger.debug "Attempt #{@retries} - #{@method.upcase} #{@uri} via #{@proxy}"
+        if [:post, :put].include?(@method) 
+          request_params = {:head => @headers, :body => @body}
+        else
+          request_params = {:head => @headers}
+        end
+        http = EventMachine::HttpRequest.new(@uri, options).send(@method, request_params)
         http.errback { 
           @logger.debug "Attempt #{@retries} - Failed"
           resubmit
@@ -75,7 +79,6 @@ module Mallory
           end
           self.succeed
         }
-      rescue
       end
     end
   end

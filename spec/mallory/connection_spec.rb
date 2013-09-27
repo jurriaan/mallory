@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'mallory/connection'
 
-describe Mallory::Connection do
+describe EventMachine::Mallory::Connection do
 
   it 'should' do
 

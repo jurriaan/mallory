@@ -33,4 +33,4 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-EventMachine::Mallory::Proxy.new(options).start!
+EventMachine::Mallory::Server.new(options).start!
