@@ -3,14 +3,14 @@ require 'em-http-request'
 require 'mallory/response'
 require 'responder'
 
-describe EventMachine::Mallory::Response do
+describe Mallory::Response do
   let(:logger) { Logger.new(STDOUT) }
 
   it "should filter out headers" do
     EM.run do
       http = EventMachine::HttpRequest.new("http://127.0.0.1:6701/200/headers", {}).get
       http.callback do
-        r = EventMachine::Mallory::Response.new(http, logger)
+        r = Mallory::Response.new(http, logger)
         r.description.should eq("OK")
         r.status.should eq(200)
         r.body.should eq("OK")

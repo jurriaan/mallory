@@ -1,11 +1,9 @@
-module EventMachine
-  class Mallory::ResponseBuilder
-    def initialize(config)
-      @config = config
-    end
+class Mallory::ResponseBuilder
+  def initialize(config)
+    @config = config
+  end
 
-    def build(data)
-      Mallory::Response.new(data, @config.logger)
-    end
+  def build(data)
+    Mallory::Response.new(data, @config.logger)
   end
 end

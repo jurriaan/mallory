@@ -4,7 +4,7 @@ require "mallory/version"
 
 Gem::Specification.new do |s|
   s.name        = "mallory"
-  s.version     = EventMachine::Mallory::VERSION
+  s.version     = Mallory::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Marcin Sawicki"]
   s.email       = ["odcinek@gmail.com"]

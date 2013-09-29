@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'mallory/proxy'
 
-describe EventMachine::Mallory::Proxy do 
+describe Mallory::Proxy do
 
 =begin
   it 'should' do
