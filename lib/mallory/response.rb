@@ -3,7 +3,7 @@ module EventMachine
     class Response
 
       def initialize http, logger
-        @logger = logger
+        @logger = logger #TODO: unsure if logger is needed in plain data structure
         @http = http
       end
 
