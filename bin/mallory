@@ -53,7 +53,6 @@ def get_logger(verbose)
 end
 
 config = Mallory::Configuration.register do |c|
-#  logger.datetime_format = '%F %T.%L'
   c.logger = get_logger(options.delete(:verbose))
   c.backend = EventMachine::Mallory::Backend::File.new("#{Dir.pwd}/proxies.txt")
 #  c.backend = Mallory::Backend::Redis.new("127.0.0.1", 6379)
