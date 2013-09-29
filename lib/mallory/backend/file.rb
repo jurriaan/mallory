@@ -2,7 +2,10 @@ module EventMachine
   module Mallory
     module Backend
       class File
-
+=begin
+It would be cool to add signal trap to refresh proxy list when file contents change
+(with initial validation, so if file is malformed, old list stays)
+=end
         def initialize(filename)
           @proxies = []
           begin

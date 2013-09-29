@@ -2,6 +2,7 @@ require 'rspec'
 require 'webrick'
 require 'em-http-request'
 require 'responder'
+require 'logger'
 
 RSpec.configure do |config|
   config.order = 'random'

@@ -2,8 +2,8 @@ module EventMachine
   module Mallory
     class Response
 
-      def initialize http
-        @logger = EventMachine::Mallory::Logger.instance
+      def initialize http, logger
+        @logger = logger
         @http = http
       end
 

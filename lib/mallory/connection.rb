@@ -5,13 +5,12 @@ require 'redis'
 module EventMachine
   module Mallory
     class Connection < EM::Connection
-      def initialize(backend, ct, it)
-        @logger = EventMachine::Mallory::Logger.instance
-        @connect_timeout = ct
-        @inactivity_timeout = it
+      def initialize(request_builder, proxy_builder, logger)
+        @logger = logger
+        @request_builder = request_builder
+        @proxy_builder = proxy_builder
         @start = Time.now
         @secure = false
-        @backend = backend
         @proto = "http"
       end
 
@@ -36,7 +35,7 @@ module EventMachine
 
       def receive_data(data) # EM::Connection
         begin
-        request = Mallory::Request.new(data)
+        request = @request_builder.build(data)
         rescue 
           error
           return
@@ -46,7 +45,7 @@ module EventMachine
           start_tls :private_key_file => './keys/server.key', :cert_chain_file => './keys/server.crt', :verify_peer => false
           return true
         end
-        proxy = Proxy.new(@backend)
+        proxy = @proxy_builder.build
         proxy.callback {
           send_data proxy.response
           close_connection_after_writing

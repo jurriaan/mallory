@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'mallory/request'
 
 describe EventMachine::Mallory::Request do
+  let(:logger) { Logger.new(STDOUT) }
 
   methods = ['GET', 'POST', 'HEAD', 'PUT', 'CONNECT', 'DELETE']
 
@@ -28,7 +29,7 @@ describe EventMachine::Mallory::Request do
           #{method} #{request[:path]} HTTP/1.1
           Host: #{request[:host]}
         HTTP
-        rq = EventMachine::Mallory::Request.new(body)
+        rq = EventMachine::Mallory::Request.new(body, logger)
         rq.method.should eq(method.downcase)
         rq.body.should be(nil)
       end
@@ -42,7 +43,7 @@ describe EventMachine::Mallory::Request do
           #{method} #{request[:path]} HTTP/1.1
           Host: #{request[:host]}
         HTTP
-        expect { EventMachine::Mallory::Request.new(body) }.to raise_error
+        expect { EventMachine::Mallory::Request.new(body, logger) }.to raise_error
       end
     end
   end

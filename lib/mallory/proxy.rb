@@ -7,10 +7,13 @@ module EventMachine
 
       include EventMachine::Deferrable
 
-      def initialize(backend)
-        @retries = 0
-        @logger = EventMachine::Mallory::Logger.instance
+      def initialize(ct, it, backend, response_builder, logger)
+        @connect_timeout = ct
+        @inactivity_timeout = it
         @backend = backend
+        @response_builder = response_builder
+        @logger = logger
+        @retries = 0
         @response = ''
       end
 
@@ -40,9 +43,9 @@ module EventMachine
           :connect_timeout => @connect_timeout,
           :inactivity_timeout => @inactivity_timeout,
           :proxy => {
-          :host => @proxy.split(':')[0],
-          :port => @proxy.split(':')[1]
-        }
+            :host => @proxy.split(':')[0],
+            :port => @proxy.split(':')[1]
+          }
         }
       end
 
@@ -65,7 +68,7 @@ module EventMachine
         }
         http.callback {
           @logger.debug "Attempt #{@retries} - Success"
-          response = EventMachine::Mallory::Response.new(http)
+          response = @response_builder.build(http)
           if response.status > 400
             @logger.debug "#{response.status} > 400"
             resubmit
