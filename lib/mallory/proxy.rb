@@ -4,6 +4,7 @@ require 'em-http-request'
 module EventMachine
   module Mallory
     class Proxy
+      MAX_ATTEMPTS = 10
 
       include EventMachine::Deferrable
 
@@ -51,7 +52,7 @@ module EventMachine
 
       def submit
         @retries+=1
-        if @retries > 10
+        if @retries > MAX_ATTEMPTS
           fail
           return
         end

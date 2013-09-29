@@ -4,9 +4,8 @@ lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
 $LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
 
 require 'mallory'
-require 'mallory/configuration'
 require 'optparse'
-require 'logger'
+require 'logging'
 
 #ARGV << '--help' if ARGV.empty?
 
@@ -35,13 +34,27 @@ OptionParser.new do |opts|
   end
 end.parse!
 
+def get_logger(verbose)
+  # https://github.com/TwP/logging/blob/master/lib/logging/layouts/pattern.rb
+  layout = Logging::Layouts::Pattern.new({ :pattern => "%d %-5l : %m\n"})
+  logger = Logging.logger['mallory']
+  file_appender = Logging.appenders.file("mallory.log")
+  file_appender.layout = layout
+  file_appender.level = :info
+  logger.add_appenders(file_appender)
+  stdout_appender = Logging.appenders.stdout
+  stdout_appender.layout = layout
+  stdout_appender.level = verbose ? :debug : :info
+  logger.add_appenders(
+      stdout_appender,
+      file_appender
+  )
+  logger
+end
+
 config = Mallory::Configuration.register do |c|
-  # http://www.ruby-doc.org/stdlib-1.9.3/libdoc/logger/rdoc/Logger.html
-  logger = Logger.new($stdout)
-  level = options.delete(:verbose) ? Logger::DEBUG : Logger::INFO
-  logger.level = level
-  logger.datetime_format = '%F %T.%L'
-  c.logger = logger
+#  logger.datetime_format = '%F %T.%L'
+  c.logger = get_logger(options.delete(:verbose))
   c.backend = EventMachine::Mallory::Backend::File.new("#{Dir.pwd}/proxies.txt")
 #  c.backend = Mallory::Backend::Redis.new("127.0.0.1", 6379)
   c.connect_timeout = options.delete(:connect_timeout) || 2

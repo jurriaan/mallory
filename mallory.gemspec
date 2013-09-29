@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency "eventmachine", "1.0.3"
   s.add_dependency "redis"
   s.add_dependency "em-http-request"
+  s.add_dependency "logging"
   s.add_development_dependency "rspec"
   s.add_development_dependency "sinatra"
   s.add_development_dependency "sinatra-contrib"

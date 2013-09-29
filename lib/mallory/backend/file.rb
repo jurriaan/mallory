@@ -17,7 +17,7 @@ It would be cool to add signal trap to refresh proxy list when file contents cha
           end
           lines.each do |line|
             if line.strip.match(/.*:\d{2,6}/)
-              @proxies << line 
+              @proxies << line.strip
             else raise("Wrong format") end
           end
         end
@@ -27,7 +27,7 @@ It would be cool to add signal trap to refresh proxy list when file contents cha
         end
 
         def all
-          @proxies      
+          @proxies
         end
 
       end

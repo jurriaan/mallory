@@ -1,3 +1,4 @@
+require 'mallory/configuration'
 require 'mallory/backend/redis'
 require 'mallory/backend/file'
 require 'mallory/backend/activerecord'
