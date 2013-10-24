@@ -5,12 +5,16 @@
 [![Dependency Status](https://gemnasium.com/odcinek/mallory.png?travis)](https://gemnasium.com/odcinek/mallory)
 [![Code Climate](https://codeclimate.com/github/odcinek/mallory.png)](https://codeclimate.com/github/odcinek/mallory)
 
-Man-in-the-middle http/https transparent http (CONNECT) proxy over bunch of (unreliable) backends.
-It is intended to be used for running test suits / scrapers. It basically shields the proxied application from low responsiveness / poor reliability of underlying proxies.
+Man-in-the-middle transparent HTTP/HTTPS CONNECT proxy, supports
+* both HTTP and HTTPS (via CONNECT https tunneling)
+* load balancing over external (unreliable) backend proxies, with some added reliability and retry policies
 
-Proxy list is provided by external backend (ActiveRecord model, Redis set) and is refreshed periodically. Original use case involves separate proxy-gathering daemon (out of the scope of this project).
+It is intended to be used for running test suits / scrapers. It basically shields the proxied application from low responsiveness / poor reliability of underlying proxies, while providing a full request log (both for HTTP and HTTPS).
+If not backends specified, requests will be performed directly.
 
-For the mallory to work properly client certificate validation needs to be turned off.
+Optional backend proxy list is fetched from Redis or flat file, and refreshed periodically. Original use case involves separate proxy-gathering daemon (out of the scope of this project).
+
+For mallory to work properly custom CA needs to be added as trusted. Optionally client certificate validation can be turned off.
 
 ## Usage
 
