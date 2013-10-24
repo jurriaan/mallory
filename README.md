@@ -72,7 +72,3 @@ Redis key TODO
 
 - [Marcin Sawicki](https://github.com/odcinek)
 - [Maria Kacik](https://github.com/mkacik)
-
-## License
-
-(The MIT License)
