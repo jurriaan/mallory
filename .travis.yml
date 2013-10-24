@@ -1,0 +1,10 @@
+language: ruby
+
+rvm:
+  - 2.0.0
+  - 1.9.3
+
+gemfile:
+  - Gemfile
+
+script: "echo 'COME ON!' && bundle exec rake spec"
