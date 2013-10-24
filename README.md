@@ -1,5 +1,8 @@
 # mallory
 
+[![Build Status](https://secure.travis-ci.org/odcinek/mallory.png?branch=master)](http://travis-ci.org/odcinek/mallory)
+[![Dependency Status](https://gemnasium.com/odcinek/mallory.png?travis)](https://gemnasium.com/odcinek/mallory)
+
 Man-in-the-middle http/https transparent http (CONNECT) proxy over bunch of (unreliable) backends.
 It is intended to be used for running test suits / scrapers. It basically shields the proxied application from low responsiveness / poor reliability of underlying proxies.
 
@@ -13,7 +16,8 @@ For the mallory to work properly client certificate validation needs to be turne
 
 ```bash
 ./keys/keygen.sh
-bundle exec ./bin/mallory -v -l 9999 #start with default proxy source (file://proxies.txt)
+bundle exec ./bin/mallory -v -l 9999 #default (no backend, organin requests)
+bundle exec ./bin/mallory -v -b file://proxies.txt -l 9999 #start with proxy file
 bundle exec ./bin/mallory -v -b redis://127.0.0.1:6379 -l 9999 #start with Redis backend
 ```
 
@@ -25,8 +29,8 @@ phantomjs --debug=yes --ignore-ssl-errors=yes --ssl-protocol=sslv2 --proxy=127.0
 ### Interface
 
 ```ruby
-mb = EventMachine::Mallory::Backend::File.new('proxies.txt')
-mp = EventMachine::Mallory::Proxy.new()
+mb = Mallory::Backend::File.new('proxies.txt')
+mp = Mallory::Proxy.new()
 mp.backend = mb
 mp.start!
 ```
