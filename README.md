@@ -37,6 +37,20 @@ mp.backend = mb
 mp.start!
 ```
 
+### Proxy backends
+
+#### Self
+
+Just direct requests, no proxies, default
+
+#### File
+
+Text file, one http proxy per line, in ```proxy:port``` format.
+
+#### Redis
+
+Redis key TODO
+
 ## What mallory is not
 - General purpose proxying daemon
 - General purpose proxy load balancer
