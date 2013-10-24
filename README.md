@@ -18,7 +18,7 @@ For the mallory to work properly client certificate validation needs to be turne
 
 ```bash
 ./keys/keygen.sh
-bundle exec ./bin/mallory -v -l 9999 #default (no backend, organin requests)
+bundle exec ./bin/mallory -v -l 9999 #default (no proxy backend, direct requests)
 bundle exec ./bin/mallory -v -b file://proxies.txt -l 9999 #start with proxy file
 bundle exec ./bin/mallory -v -b redis://127.0.0.1:6379 -l 9999 #start with Redis backend
 ```

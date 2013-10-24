@@ -54,7 +54,8 @@ end
 
 config = Mallory::Configuration.register do |c|
   c.logger = get_logger(options.delete(:verbose))
-  c.backend = Mallory::Backend::File.new("#{Dir.pwd}/proxies.txt")
+  c.backend = Mallory::Backend::Self.new()
+  #c.backend = Mallory::Backend::File.new("#{Dir.pwd}/proxies.txt")
 #  c.backend = Mallory::Backend::Redis.new("127.0.0.1", 6379)
   c.connect_timeout = options.delete(:connect_timeout) || 2
   c.inactivity_timeout = options.delete(:inactivity_timeout) || 2

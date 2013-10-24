@@ -39,14 +39,17 @@ module Mallory
     end
 
     def options
-      {
+      options = {
         :connect_timeout => @connect_timeout,
         :inactivity_timeout => @inactivity_timeout,
-        :proxy => {
+      }
+      if not @proxy.nil?
+        options[:proxy] = {
           :host => @proxy.split(':')[0],
           :port => @proxy.split(':')[1]
         }
-      }
+      end
+      return options
     end
 
     def submit

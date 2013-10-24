@@ -7,3 +7,4 @@ keys/*.crt
 keys/*.key
 keys/*.csr
 proxies.txt
+mallory.log
