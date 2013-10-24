@@ -17,7 +17,11 @@ OptionParser.new do |opts|
     options[:listen] = v
   end
 
-  opts.on("-b", "--backend BACKEND", String, "Backend to use (default 'file://proxies.txt')") do |v|
+  opts.on("-b", "--backend BACKEND", String, "Backend to use") do |v|
+    options[:listen] = v
+  end
+
+  opts.on("-ca", "--certificate-authority CA", String, "Certificate authority (default './keys/ca.crt')") do |v|
     options[:listen] = v
   end
 
@@ -55,8 +59,7 @@ end
 config = Mallory::Configuration.register do |c|
   c.logger = get_logger(options.delete(:verbose))
   c.backend = Mallory::Backend::Self.new()
-  #c.backend = Mallory::Backend::File.new("#{Dir.pwd}/proxies.txt")
-#  c.backend = Mallory::Backend::Redis.new("127.0.0.1", 6379)
+  c.certificate_authority = options.has_key?(:certificate_authority) ? Mallory::Ca.new(options.delete(:certificate_authority)) : Mallory::Ca.new("./keys/ca.crt")
   c.connect_timeout = options.delete(:connect_timeout) || 2
   c.inactivity_timeout = options.delete(:inactivity_timeout) || 2
   c.listen = options.delete(:listen) || 9999

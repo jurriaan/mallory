@@ -7,12 +7,13 @@ module Mallory
 
     include EventMachine::Deferrable
 
-    def initialize(ct, it, backend, response_builder, logger)
+    def initialize(ct, it, backend, response_builder, logger, certificate_authority)
       @connect_timeout = ct
       @inactivity_timeout = it
       @backend = backend
       @response_builder = response_builder
       @logger = logger
+      @certificate_authority = certificate_authority
       @retries = 0
       @response = ''
     end

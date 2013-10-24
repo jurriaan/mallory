@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
+
+require 'mallory'
+require 'optparse'
+require 'certificate_authority'
+
+root = CertificateAuthority::Certificate.new
+root.subject.common_name= "http://yourdomain.com"
+root.serial_number.number=1
+root.key_material.generate_key
+root.signing_entity = true
+signing_profile = {"extensions" => {"keyUsage" => {"usage" => ["critical", "keyCertSign"] }} }
+root.sign!(signing_profile)
+
+File.open("keys/ca.key", 'w') {|file| file.write(root.key_material.private_key.to_s) }
+File.open("keys/ca.pub", 'w') {|file| file.write(root.key_material.public_key.to_s) }

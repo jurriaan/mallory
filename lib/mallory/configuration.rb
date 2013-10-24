@@ -29,6 +29,14 @@ module Mallory
       @settings[:backend] = other
     end
 
+    def self.certificate_authority
+      @settings[:certificate_authority]
+    end
+
+    def self.certificate_authority=(other)
+      @settings[:certificate_authority] = other
+    end
+
     def self.listen
       @settings[:listen]
     end

@@ -5,6 +5,6 @@ class Mallory::ProxyBuilder
   end
 
   def build
-    Mallory::Proxy.new(@config.connect_timeout, @config.inactivity_timeout, @config.backend, @response_builder, @config.logger)
+    Mallory::Proxy.new(@config.connect_timeout, @config.inactivity_timeout, @config.backend, @response_builder, @config.logger, @config.certificate_authority)
   end
 end
