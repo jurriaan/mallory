@@ -72,6 +72,7 @@ module Mallory
       http.callback {
         @logger.debug "Attempt #{@retries} - Success"
         response = @response_builder.build(http)
+        @logger.request response.body
         if response.status > 400
           @logger.debug "#{response.status} > 400"
           resubmit

@@ -16,17 +16,20 @@ For the mallory to work properly client certificate validation needs to be turne
 
 ### Command line
 
-```bash
-./keys/keygen.sh
-bundle exec ./bin/mallory -v -l 9999 #default (no proxy backend, direct requests)
-bundle exec ./bin/mallory -v -b file://proxies.txt -l 9999 #start with proxy file
-bundle exec ./bin/mallory -v -b redis://127.0.0.1:6379 -l 9999 #start with Redis backend
+Generate keys with ```./keys/keygen.sh```
+
+```
+bundle exec ./bin/mallory -v -p 9999 #default (no proxy backend, direct requests)
+bundle exec ./bin/mallory -v -b file://proxies.txt -p 9999 #start with proxy file
+bundle exec ./bin/mallory -v -b redis://127.0.0.1:6379 -p 9999 #start with Redis backend
 ```
 
 ```bash
 curl --insecure --proxy 127.0.0.1:9999 https://www.dropbox.com/login
 phantomjs --debug=yes --ignore-ssl-errors=yes --ssl-protocol=sslv2 --proxy=127.0.0.1:9999 --proxy-type=http hello.js
 ```
+
+Do ```bundle exec ./bin/mallory --help``` for help.
 
 ### Interface
 

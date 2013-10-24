@@ -13,7 +13,7 @@ module Mallory
   class Server
     def initialize config
       @logger = config.logger
-      @listen = config.listen
+      @port = config.port
       @request_builder = Mallory::RequestBuilder.new(config)
       response_builder = Mallory::ResponseBuilder.new(config)
       @proxy_builder = Mallory::ProxyBuilder.new(config, response_builder)
@@ -22,7 +22,7 @@ module Mallory
     def start!
       EventMachine.run {
         @logger.info "Starting mallory"
-        EventMachine.start_server '127.0.0.1', @listen, Mallory::Connection, @request_builder, @proxy_builder, @logger
+        EventMachine.start_server '127.0.0.1', @port, Mallory::Connection, @request_builder, @proxy_builder, @logger
       }
     end
   end

@@ -8,3 +8,6 @@ keys/*.key
 keys/*.csr
 proxies.txt
 mallory.log
+debug.log
+request.log
+output.log
