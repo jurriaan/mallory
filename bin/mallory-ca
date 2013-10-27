@@ -4,15 +4,24 @@ $LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
 
 require 'mallory'
 require 'optparse'
-require 'certificate_authority'
 
-root = CertificateAuthority::Certificate.new
-root.subject.common_name= "http://yourdomain.com"
-root.serial_number.number=1
-root.key_material.generate_key
-root.signing_entity = true
-signing_profile = {"extensions" => {"keyUsage" => {"usage" => ["critical", "keyCertSign"] }} }
-root.sign!(signing_profile)
+key = OpenSSL::PKey::RSA.new 2048
+ca = OpenSSL::X509::Certificate.new
+ca.version = 2
+ca.serial = 1
+ca.subject = OpenSSL::X509::Name.parse "/CN=nobody/DC=example.com"
+ca.issuer = ca.subject
+ca.public_key = key.public_key
+ca.not_before = Time.now
+ca.not_after = ca.not_before + 365*24*3600
+ef = OpenSSL::X509::ExtensionFactory.new
+ef.subject_certificate = ca
+ef.issuer_certificate = ca
+ca.add_extension(ef.create_extension("basicConstraints","CA:TRUE",true))
+ca.add_extension(ef.create_extension("keyUsage","keyCertSign, cRLSign", true))
+ca.add_extension(ef.create_extension("subjectKeyIdentifier","hash",false))
+ca.add_extension(ef.create_extension("authorityKeyIdentifier","keyid:always",false))
+ca.sign(key, OpenSSL::Digest::SHA256.new)
 
-File.open("keys/ca.key", 'w') {|file| file.write(root.key_material.private_key.to_s) }
-File.open("keys/ca.pub", 'w') {|file| file.write(root.key_material.public_key.to_s) }
+File.open("./keys/ca.crt", 'w') {|file| file.write(ca.to_pem) }
+File.open("./keys/ca.key", 'w') {|file| file.write(key.to_pem) }

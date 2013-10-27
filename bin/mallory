@@ -59,7 +59,10 @@ end
 config = Mallory::Configuration.register do |c|
   c.logger = get_logger(options.delete(:verbose))
   c.backend = Mallory::Backend::Self.new()
-  c.certificate_authority = options.has_key?(:certificate_authority) ? Mallory::Ca.new(options.delete(:certificate_authority)) : Mallory::Ca.new("./keys/ca.crt")
+  ca = options.has_key?(:certificate_authority) ? Mallory:::SSL::CA.new(options.delete(:certificate_authority)) : Mallory::SSL::CA.new("./keys/ca.crt", "./keys/ca.key")
+  cf = Mallory::SSL::CertificateFactory.new(ca)
+  st = Mallory::SSL::MemoryStorage.new()
+  c.certificate_manager = Mallory::SSL::CertificateManager.new(cf, st)
   c.connect_timeout = options.delete(:connect_timeout) || 2
   c.inactivity_timeout = options.delete(:inactivity_timeout) || 2
   c.listen = options.delete(:listen) || 9999

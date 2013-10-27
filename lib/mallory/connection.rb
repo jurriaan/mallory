@@ -41,6 +41,9 @@ module Mallory
         return
       end
       if not @secure and request.method.eql?('connect')
+        ca = Mallory::SSL::CA.new(1,"ff")
+        st = Mallory::SSL::Storage.new(ca)
+        cert = st.sign("localhost")
         send_data "HTTP/1.0 200 Connection established\r\n\r\n"
         start_tls :private_key_file => './keys/server.key', :cert_chain_file => './keys/server.crt', :verify_peer => false
         return true
