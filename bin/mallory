@@ -13,12 +13,12 @@ options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: proxybalancer [options]"
 
-  opts.on("-l", "--listen PORT", Integer, "Port to listen on (default 9999)") do |v|
-    options[:listen] = v
+  opts.on("-p", "--port PORT", Integer, "Port to listen on (default 9999)") do |v|
+    options[:port] = v
   end
 
-  opts.on("-b", "--backend BACKEND", String, "Backend to use") do |v|
-    options[:listen] = v
+  opts.on("-b", "--backend BACKEND", String, "Backend to use (default 'file://proxies.txt')") do |v|
+    options[:backend] = v
   end
 
   opts.on("-cac", "--certificate-authority-cert CERT", String, "CA cert (default './keys/ca.crt')") do |v|
@@ -37,31 +37,43 @@ OptionParser.new do |opts|
     options[:it] = v
   end
 
+  opts.on("-l", "--activity-log LOGFILE", String, "Log events & debug (default STDOUT)") do |v|
+    options[:activity_log] = v
+  end
+
+  opts.on("-r", "--request-log LOGFILE", String, "Log requests (default none)") do |v|
+    options[:request_log] = v
+  end
+
   opts.on("-v", "--verbose", "Run in debug mode") do |v|
     options[:verbose] = v
   end
 end.parse!
 
-def get_logger(verbose)
+def get_logger(activity_log, request_log, verbose)
   # https://github.com/TwP/logging/blob/master/lib/logging/layouts/pattern.rb
+  Logging.init :debug, :info, :request
   layout = Logging::Layouts::Pattern.new({ :pattern => "%d %-5l : %m\n"})
   logger = Logging.logger['mallory']
-  file_appender = Logging.appenders.file("mallory.log")
-  file_appender.layout = layout
-  file_appender.level = :info
-  logger.add_appenders(file_appender)
-  stdout_appender = Logging.appenders.stdout
-  stdout_appender.layout = layout
-  stdout_appender.level = verbose ? :debug : :info
-  logger.add_appenders(
-      stdout_appender,
-      file_appender
-  )
+
+  activity_appender = Logging.appenders.stdout
+  activity_appender = Logging.appenders.file(activity_log) if not activity_log.nil?
+  activity_appender.layout = layout
+  activity_appender.level = verbose ? :debug : :info
+  logger.add_appenders(activity_appender)
+  
+  if not request_log.nil?
+    request_appender = Logging.appenders.file(request_log)
+    request_appender.layout = layout
+    request_appender.level = :request
+    logger.add_appenders(request_appender)
+  end
+
   logger
 end
 
 config = Mallory::Configuration.register do |c|
-  c.logger = get_logger(options.delete(:verbose))
+  c.logger = get_logger(options.delete(:activity_log), options.delete(:request_log), options.delete(:verbose))
   c.backend = Mallory::Backend::Self.new()
   ca = options.has_key?(:ca_cert) ? Mallory::SSL::CA.new(options.delete(:ca_cert), options.delete(:ca_key)) : Mallory::SSL::CA.new("./keys/ca.crt", "./keys/ca.key")
   cf = Mallory::SSL::CertificateFactory.new(ca)
@@ -69,7 +81,7 @@ config = Mallory::Configuration.register do |c|
   c.certificate_manager = Mallory::SSL::CertificateManager.new(cf, st)
   c.connect_timeout = options.delete(:connect_timeout) || 2
   c.inactivity_timeout = options.delete(:inactivity_timeout) || 2
-  c.listen = options.delete(:listen) || 9999
+  c.port = options.delete(:port) || 9999
 end
 
 Mallory::Server.new(config).start!

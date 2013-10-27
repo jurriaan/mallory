@@ -37,12 +37,12 @@ module Mallory
       @settings[:certificate_manager] = other
     end
 
-    def self.listen
-      @settings[:listen]
+    def self.port
+      @settings[:port]
     end
 
-    def self.listen=(other)
-      @settings[:listen] = other
+    def self.port=(other)
+      @settings[:port] = other
     end
 
     def self.connect_timeout

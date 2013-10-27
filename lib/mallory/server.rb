@@ -13,7 +13,7 @@ module Mallory
   class Server
     def initialize config
       @logger = config.logger
-      @listen = config.listen
+      @port = config.port
       @request_builder = Mallory::RequestBuilder.new(config)
       response_builder = Mallory::ResponseBuilder.new(config)
       @proxy_builder = Mallory::ProxyBuilder.new(config, response_builder)

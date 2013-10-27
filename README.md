@@ -5,28 +5,35 @@
 [![Dependency Status](https://gemnasium.com/odcinek/mallory.png?travis)](https://gemnasium.com/odcinek/mallory)
 [![Code Climate](https://codeclimate.com/github/odcinek/mallory.png)](https://codeclimate.com/github/odcinek/mallory)
 
-Man-in-the-middle http/https transparent http (CONNECT) proxy over bunch of (unreliable) backends.
-It is intended to be used for running test suits / scrapers. It basically shields the proxied application from low responsiveness / poor reliability of underlying proxies.
+Man-in-the-middle transparent HTTP/HTTPS CONNECT proxy, supports
+* both HTTP and HTTPS (via CONNECT https tunneling)
+* load balancing over external (unreliable) backend proxies, with some added reliability and retry policies
 
-Proxy list is provided by external backend (ActiveRecord model, Redis set) and is refreshed periodically. Original use case involves separate proxy-gathering daemon (out of the scope of this project).
+It is intended to be used for running test suits / scrapers. It basically shields the proxied application from low responsiveness / poor reliability of underlying proxies, while providing a full request log (both for HTTP and HTTPS).
+If not backends specified, requests will be performed directly.
 
-For the mallory to work properly client certificate validation needs to be turned off.
+Optional backend proxy list is fetched from Redis or flat file, and refreshed periodically. Original use case involves separate proxy-gathering daemon (out of the scope of this project).
+
+For mallory to work properly custom CA needs to be added as trusted. Optionally client certificate validation can be turned off.
 
 ## Usage
 
 ### Command line
 
-```bash
-./keys/keygen.sh
-bundle exec ./bin/mallory -v -l 9999 #default (no proxy backend, direct requests)
-bundle exec ./bin/mallory -v -b file://proxies.txt -l 9999 #start with proxy file
-bundle exec ./bin/mallory -v -b redis://127.0.0.1:6379 -l 9999 #start with Redis backend
+Generate keys with ```./keys/keygen.sh```
+
+```
+bundle exec ./bin/mallory -v -p 9999 #default (no proxy backend, direct requests)
+bundle exec ./bin/mallory -v -b file://proxies.txt -p 9999 #start with proxy file
+bundle exec ./bin/mallory -v -b redis://127.0.0.1:6379 -p 9999 #start with Redis backend
 ```
 
 ```bash
 curl --insecure --proxy 127.0.0.1:9999 https://www.dropbox.com/login
 phantomjs --debug=yes --ignore-ssl-errors=yes --ssl-protocol=sslv2 --proxy=127.0.0.1:9999 --proxy-type=http hello.js
 ```
+
+Do ```bundle exec ./bin/mallory --help``` for help.
 
 ### Interface
 
