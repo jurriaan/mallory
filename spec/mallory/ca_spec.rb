@@ -50,7 +50,7 @@ eos
     ca = Mallory::SSL::CA.new(@crt_file, @key_file)
     cert = ca.sign(csr)
     cert.subject.should eq(OpenSSL::X509::Name.parse "/CN=nobody/DC=#{domain}")
-    Mallory::SSL::Certificate.new(key, cert).to_pem
+    Mallory::SSL::Certificate.new(key, cert).cert
   end
 
 end
