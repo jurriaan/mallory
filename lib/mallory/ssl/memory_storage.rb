@@ -2,26 +2,17 @@ module Mallory
   module SSL
     class MemoryStorage
 
-      def initialize ca
-        @ca = ca
-        @sn = 12
-        @storage = {}
+      def initialize
+        @certs = {}
       end
 
       def get domain
-        if @storage[domain]
-          return @storage[domain]
-        else
-          cert = sign(domain)
-          @storage[domain] = cert
-          return cert
-        end
+        @certs[domain]
       end
 
-      def sign domain
-        csr = Mallory::SSL::Certificate.csr(domain)
-        signed = @ca.sign(csr)
-        Mallory::SSL::Certificate.new(signed)
+      def put cert
+        domain = cert.subject.to_a.select{|x|x[0]=="CN"}.first[1] #OpenSSL::X509::Name could have hash interface. Could.
+        @certs[domain] = cert
       end
 
     end

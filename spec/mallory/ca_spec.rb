@@ -46,11 +46,11 @@ eos
   end
 
   it "Signs a given csr" do
-    csr = Mallory::SSL::Certificate.csr(domain)
+    key, csr = Mallory::SSL::Certificate.csr(domain)
     ca = Mallory::SSL::CA.new(@crt_file, @key_file)
     cert = ca.sign(csr)
     cert.subject.should eq(OpenSSL::X509::Name.parse "/CN=nobody/DC=#{domain}")
-    Mallory::SSL::Certificate.new(cert).to_pem
+    Mallory::SSL::Certificate.new(key, cert).to_pem
   end
 
 end

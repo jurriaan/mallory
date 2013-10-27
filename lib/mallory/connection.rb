@@ -5,10 +5,11 @@ require 'redis'
 
 module Mallory
   class Connection < EM::Connection
-    def initialize(request_builder, proxy_builder, logger)
+    def initialize(request_builder, proxy_builder, logger, certificate_manager)
       @logger = logger
       @request_builder = request_builder
       @proxy_builder = proxy_builder
+      @certificate_manager = certificate_manager
       @start = Time.now
       @secure = false
       @proto = "http"
@@ -41,11 +42,13 @@ module Mallory
         return
       end
       if not @secure and request.method.eql?('connect')
-        ca = Mallory::SSL::CA.new(1,"ff")
-        st = Mallory::SSL::Storage.new(ca)
-        cert = st.sign("localhost")
+        cc = @certificate_manager.get("localhost")
+        private_key_file = Tempfile.new('private_key_file')
+        print cc.key
+        private_key_file.write (cc.key)
+        private_key_file.close()
         send_data "HTTP/1.0 200 Connection established\r\n\r\n"
-        start_tls :private_key_file => './keys/server.key', :cert_chain_file => './keys/server.crt', :verify_peer => false
+        start_tls :private_key_file => private_key_file.path, :cert_chain_file => './keys/ca.crt', :verify_peer => false
         return true
       end
       proxy = @proxy_builder.build

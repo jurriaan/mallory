@@ -21,8 +21,12 @@ OptionParser.new do |opts|
     options[:listen] = v
   end
 
-  opts.on("-ca", "--certificate-authority CA", String, "Certificate authority (default './keys/ca.crt')") do |v|
-    options[:listen] = v
+  opts.on("-cac", "--certificate-authority-cert CERT", String, "CA cert (default './keys/ca.crt')") do |v|
+    options[:ca_cert] = v
+  end
+
+  opts.on("-cak", "--certificate-authority-key KEY", String, "CA key (default './keys/ca.key')") do |v|
+    options[:ca_key] = v
   end
 
   opts.on("-ct", "--connect-timeout SECONDS", Integer, "Proxy connect timeout (default 2s)") do |v|
@@ -59,7 +63,7 @@ end
 config = Mallory::Configuration.register do |c|
   c.logger = get_logger(options.delete(:verbose))
   c.backend = Mallory::Backend::Self.new()
-  ca = options.has_key?(:certificate_authority) ? Mallory:::SSL::CA.new(options.delete(:certificate_authority)) : Mallory::SSL::CA.new("./keys/ca.crt", "./keys/ca.key")
+  ca = options.has_key?(:ca_cert) ? Mallory::SSL::CA.new(options.delete(:ca_cert), options.delete(:ca_key)) : Mallory::SSL::CA.new("./keys/ca.crt", "./keys/ca.key")
   cf = Mallory::SSL::CertificateFactory.new(ca)
   st = Mallory::SSL::MemoryStorage.new()
   c.certificate_manager = Mallory::SSL::CertificateManager.new(cf, st)

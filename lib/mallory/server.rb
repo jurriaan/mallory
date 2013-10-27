@@ -17,12 +17,13 @@ module Mallory
       @request_builder = Mallory::RequestBuilder.new(config)
       response_builder = Mallory::ResponseBuilder.new(config)
       @proxy_builder = Mallory::ProxyBuilder.new(config, response_builder)
+      @certificate_manager = config.certificate_manager
     end
 
     def start!
       EventMachine.run {
         @logger.info "Starting mallory"
-        EventMachine.start_server '127.0.0.1', @listen, Mallory::Connection, @request_builder, @proxy_builder, @logger
+        EventMachine.start_server '127.0.0.1', @listen, Mallory::Connection, @request_builder, @proxy_builder, @logger, @certificate_manager
       }
     end
   end

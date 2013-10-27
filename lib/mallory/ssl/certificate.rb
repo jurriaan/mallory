@@ -2,7 +2,8 @@ module Mallory
   module SSL
     class Certificate
 
-      def initialize cert
+      def initialize key, cert
+        @key = key
         @cert = cert
       end
 
@@ -12,11 +13,16 @@ module Mallory
         csr.version = 0
         csr.subject = OpenSSL::X509::Name.parse "CN=nobody/DC=#{domain}"
         csr.public_key = key.public_key
-        csr.sign key, OpenSSL::Digest::SHA1.new
+        signed = csr.sign key, OpenSSL::Digest::SHA1.new
+        return key, signed
       end
 
-      def to_pem
+      def cert
         @cert.to_pem
+      end
+
+      def key
+        @key.to_pem
       end
 
     end

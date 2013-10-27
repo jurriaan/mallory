@@ -7,9 +7,9 @@ module Mallory
       end
 
       def get domain
-        csr = Mallory::SSL::Certificate.csr(domain)
+        key, csr = Mallory::SSL::Certificate.csr(domain)
         signed = @ca.sign(csr)
-        Mallory::SSL::Certificate.new(signed)
+        Mallory::SSL::Certificate.new(key, signed)
       end
   
     end
