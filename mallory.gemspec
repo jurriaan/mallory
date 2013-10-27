@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.add_dependency "redis"
   s.add_dependency "em-http-request"
   s.add_dependency "logging"
+  s.add_dependency "certificate_authority"
   s.add_development_dependency "rspec"
   s.add_development_dependency "sinatra"
   s.add_development_dependency "sinatra-contrib"

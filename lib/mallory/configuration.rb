@@ -29,6 +29,14 @@ module Mallory
       @settings[:backend] = other
     end
 
+    def self.certificate_manager
+      @settings[:certificate_manager]
+    end
+
+    def self.certificate_manager=(other)
+      @settings[:certificate_manager] = other
+    end
+
     def self.port
       @settings[:port]
     end
