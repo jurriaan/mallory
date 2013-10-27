@@ -13,9 +13,9 @@ module Mallory
 
       def sign csr
         cert = OpenSSL::X509::Certificate.new
-        cert.serial = 0
-        cert.version = 2
-        cert.not_before = Time.now
+        cert.serial = 12158693495562452430+rand(10000)
+        cert.version = 0 #2
+        cert.not_before = Time.now - 3600
         cert.not_after = Time.now + 365*24*3600
         cert.subject = csr.subject
         cert.public_key = csr.public_key

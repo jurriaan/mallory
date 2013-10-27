@@ -23,7 +23,7 @@ module Mallory
     def start!
       EventMachine.run {
         @logger.info "Starting mallory"
-        EventMachine.start_server '127.0.0.1', @listen, Mallory::Connection, @request_builder, @proxy_builder, @logger, @certificate_manager
+        EventMachine.start_server '127.0.0.1', @port, Mallory::Connection, @request_builder, @proxy_builder, @logger, @certificate_manager
       }
     end
   end

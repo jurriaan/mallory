@@ -25,6 +25,10 @@ module Mallory
       "#{@protocol}://#{@request['host']}#{@request.path}"
     end
 
+    def host
+      @request['host'].split(":")[0]
+    end
+
     def method
       @request.request_method.downcase
     end

@@ -9,7 +9,7 @@ key = OpenSSL::PKey::RSA.new 2048
 ca = OpenSSL::X509::Certificate.new
 ca.version = 2
 ca.serial = 1
-ca.subject = OpenSSL::X509::Name.parse "/CN=nobody/DC=example.com"
+ca.subject = OpenSSL::X509::Name.parse "/CN=ROOT"
 ca.issuer = ca.subject
 ca.public_key = key.public_key
 ca.not_before = Time.now

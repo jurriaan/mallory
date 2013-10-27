@@ -11,7 +11,7 @@ module Mallory
         key = OpenSSL::PKey::RSA.new 1024
         csr = OpenSSL::X509::Request.new
         csr.version = 0
-        csr.subject = OpenSSL::X509::Name.parse "CN=nobody/DC=#{domain}"
+        csr.subject = OpenSSL::X509::Name.parse "/CN=#{domain}"
         csr.public_key = key.public_key
         signed = csr.sign key, OpenSSL::Digest::SHA1.new
         return key, signed

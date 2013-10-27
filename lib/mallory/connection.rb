@@ -42,13 +42,17 @@ module Mallory
         return
       end
       if not @secure and request.method.eql?('connect')
-        cc = @certificate_manager.get("localhost")
+        #TEMPORARY FIXME
+        cc = @certificate_manager.get(request.host)
+        ca = File.read("./keys/ca.crt")
         private_key_file = Tempfile.new('private_key_file')
-        print cc.key
         private_key_file.write (cc.key)
         private_key_file.close()
+        cert_chain_file = Tempfile.new('cert_chain_file')
+        cert_chain_file.write (cc.cert + ca)
+        cert_chain_file.close()
         send_data "HTTP/1.0 200 Connection established\r\n\r\n"
-        start_tls :private_key_file => private_key_file.path, :cert_chain_file => './keys/ca.crt', :verify_peer => false
+        start_tls :private_key_file => private_key_file.path, :cert_chain_file => cert_chain_file.path, :verify_peer => true
         return true
       end
       proxy = @proxy_builder.build

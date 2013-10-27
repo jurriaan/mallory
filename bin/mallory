@@ -52,7 +52,7 @@ end.parse!
 
 def get_logger(activity_log, request_log, verbose)
   # https://github.com/TwP/logging/blob/master/lib/logging/layouts/pattern.rb
-  Logging.init :debug, :info, :request
+  Logging.init :request, :debug, :info
   layout = Logging::Layouts::Pattern.new({ :pattern => "%d %-5l : %m\n"})
   logger = Logging.logger['mallory']
 
