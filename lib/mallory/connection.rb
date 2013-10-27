@@ -21,11 +21,11 @@ module Mallory
     end
 
     def post_init # EM::Connection
-      @logger.debug "Start connection"
+      @logger.debug "Start connection #{self.object_id}"
     end
 
     def unbind(reason=nil) # EM::Connection
-      @logger.debug "Close connection #{reason}"
+      @logger.debug "Close connection #{self.object_id} #{reason}"
     end
 
     def error

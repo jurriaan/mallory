@@ -16,6 +16,7 @@ module Mallory
       @certificate_authority = certificate_authority
       @retries = 0
       @response = ''
+      @start = Time.now
     end
 
     def resubmit
@@ -44,7 +45,7 @@ module Mallory
         :connect_timeout => @connect_timeout,
         :inactivity_timeout => @inactivity_timeout,
       }
-      if not @proxy.nil?
+      unless @proxy.nil?
         options[:proxy] = {
           :host => @proxy.split(':')[0],
           :port => @proxy.split(':')[1]
@@ -59,7 +60,8 @@ module Mallory
         fail
         return
       end
-      @logger.debug "Attempt #{@retries} - #{@method.upcase} #{@uri} via #{@proxy}"
+      via = " via #{@proxy}" unless @proxy.nil?
+      @logger.debug "Attempt #{@retries} - #{@method.upcase} #{@uri} #{via}"
       if [:post, :put].include?(@method)
         request_params = {:head => @headers, :body => @body}
       else
@@ -83,7 +85,7 @@ module Mallory
           send_data "\r\n\r\n"
           send_data response.body
           @logger.debug "Send content #{response.body.length} bytes"
-          @logger.info "Success (#{Time.now-Time.now}s, #{@retries} attempts)"
+          @logger.info "Success (#{Time.now-@start}s, #{@retries} attempts)"
         end
         self.succeed
       }
