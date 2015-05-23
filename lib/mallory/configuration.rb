@@ -19,14 +19,6 @@ module Mallory
       @settings[:logger] = other
     end
 
-    def self.backend
-      @settings[:backend]
-    end
-
-    def self.backend=(other)
-      @settings[:backend] = other
-    end
-
     def self.certificate_manager
       @settings[:certificate_manager]
     end

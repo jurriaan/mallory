@@ -7,10 +7,9 @@ module Mallory
 
     include EventMachine::Deferrable
 
-    def initialize(ct, it, backend, response_builder, logger, certificate_authority)
+    def initialize(ct, it, response_builder, logger, certificate_authority)
       @connect_timeout = ct
       @inactivity_timeout = it
-      @backend = backend
       @response_builder = response_builder
       @logger = logger
       @certificate_authority = certificate_authority
@@ -19,17 +18,12 @@ module Mallory
       @start = Time.now
     end
 
-    def resubmit
-      @proxy = @backend.any
-      submit
-    end
-
     def perform(request)
       @method = request.method.to_s
       @uri = request.uri
       @request_headers = request.headers
       @body = request.body || ''
-      resubmit
+      submit
     end
 
     def send_data(data)
@@ -43,12 +37,6 @@ module Mallory
         connect_timeout: @connect_timeout,
         inactivity_timeout: @inactivity_timeout
       }
-      unless @proxy.nil?
-        options[:proxy] = {
-          host: @proxy.split(':')[0],
-          port: @proxy.split(':')[1]
-        }
-      end
       options
     end
 
@@ -58,8 +46,7 @@ module Mallory
         fail
         return
       end
-      via = " via #{@proxy}" unless @proxy.nil?
-      @logger.debug "Attempt #{@retries} - #{@method.upcase} #{@uri} #{via}"
+      @logger.debug "Attempt #{@retries} - #{@method.upcase} #{@uri}"
       if [:post, :put].include?(@method)
         request_params = { head: @headers, body: @body }
       else
@@ -68,7 +55,7 @@ module Mallory
       http = EventMachine::HttpRequest.new(@uri, options).send(@method, request_params)
       http.errback do
         @logger.debug "Attempt #{@retries} - Failed"
-        resubmit
+        submit
       end
       http.callback do
         @logger.debug "Attempt #{@retries} - Success"
@@ -76,7 +63,7 @@ module Mallory
         @logger.request response.body
         if response.status > 400
           @logger.debug "#{response.status} > 400"
-          resubmit
+          submit
         else
           send_data "HTTP/1.1 #{response.status} #{response.description}\n"
           send_data response.headers
