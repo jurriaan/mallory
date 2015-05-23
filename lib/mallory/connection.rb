@@ -52,8 +52,8 @@ module Mallory
         cert_chain_file.write (cc.cert + ca)
         cert_chain_file.close()
         send_data "HTTP/1.0 200 Connection established\r\n\r\n"
-        start_tls :private_key_file => private_key_file.path, :cert_chain_file => cert_chain_file.path, :verify_peer => true
-        return true
+        start_tls private_key_file: private_key_file.path, cert_chain_file: cert_chain_file.path
+        true
       end
       proxy = @proxy_builder.build
       proxy.callback {
