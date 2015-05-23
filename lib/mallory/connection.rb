@@ -13,6 +13,7 @@ module Mallory
       @start = Time.now
       @secure = false
       @proto = "http"
+      @data = ''
     end
 
     def ssl_handshake_completed # EM::Connection
@@ -34,37 +35,44 @@ module Mallory
       close_connection_after_writing
     end
 
-    def receive_data(data) # EM::Connection
+    def receive_data(chunk) # EM::Connection
+      @data << chunk
       begin
-      request = @request_builder.build(data)
-      rescue
-        error
+        request = @request_builder.build(@data)
+      rescue WEBrick::HTTPStatus::BadRequest
+        # not a complete request yet
         return
+      rescue => e
+        puts "error: #{e}, #{e.backtrace}"
+        return
+      else
+        @data = ''
       end
-      if not @secure and request.method.eql?('connect')
-        #TEMPORARY FIXME
+      if !@secure && request.method.eql?('connect')
+        # TEMPORARY FIXME
         cc = @certificate_manager.get(request.host)
-        ca = File.read("./keys/ca.crt")
+        ca = File.read('./keys/ca.crt')
         private_key_file = Tempfile.new('private_key_file')
         private_key_file.write (cc.key)
-        private_key_file.close()
+        private_key_file.close
         cert_chain_file = Tempfile.new('cert_chain_file')
         cert_chain_file.write (cc.cert + ca)
-        cert_chain_file.close()
+        cert_chain_file.close
         send_data "HTTP/1.0 200 Connection established\r\n\r\n"
         start_tls private_key_file: private_key_file.path, cert_chain_file: cert_chain_file.path
         true
+      else
+        proxy = @proxy_builder.build
+        proxy.callback do
+          send_data proxy.response
+          close_connection_after_writing
+        end
+        proxy.errback do
+          error
+        end
+        request.protocol = 'https' if @secure
+        proxy.perform(request)
       end
-      proxy = @proxy_builder.build
-      proxy.callback {
-        send_data proxy.response
-        close_connection_after_writing
-      }
-      proxy.errback {
-        error
-      }
-      request.protocol = 'https' if @secure
-      proxy.perform(request)
     end
   end
 end

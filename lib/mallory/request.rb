@@ -17,12 +17,15 @@ module Mallory
       data.sub!("Host: #{line[3]}:#{port}", "Host: #{line[3]}")
       @request = WEBrick::HTTPRequest.new(WEBrick::Config::HTTP)
       @request.parse(StringIO.new(data))
+      @body = @request.body
+    rescue WEBrick::HTTPStatus::LengthRequired
+      @body = nil
     rescue WEBrick::HTTPStatus::BadRequest
       raise
     end
 
     def uri
-      "#{@protocol}://#{@request['host']}#{@request.path}"
+      @request.request_uri.tap { |u| u.scheme = protocol }.to_s
     end
 
     def host
@@ -40,9 +43,7 @@ module Mallory
     end
 
     def body
-      @request.body
-    rescue WEBrick::HTTPStatus::LengthRequired
-      nil
+      @body
     end
 
   end
