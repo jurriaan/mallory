@@ -2,7 +2,6 @@ require 'eventmachine'
 require 'em-http-request'
 require 'redis'
 
-
 module Mallory
   class Connection < EM::Connection
     def initialize(request_builder, proxy_builder, logger, certificate_manager)
@@ -12,25 +11,25 @@ module Mallory
       @certificate_manager = certificate_manager
       @start = Time.now
       @secure = false
-      @proto = "http"
+      @proto = 'http'
       @data = ''
     end
 
     def ssl_handshake_completed # EM::Connection
-      @logger.debug "Secure connection intercepted"
+      @logger.debug 'Secure connection intercepted'
       @secure = true
     end
 
     def post_init # EM::Connection
-      @logger.debug "Start connection #{self.object_id}"
+      @logger.debug "Start connection #{object_id}"
     end
 
-    def unbind(reason=nil) # EM::Connection
-      @logger.debug "Close connection #{self.object_id} #{reason}"
+    def unbind(reason = nil) # EM::Connection
+      @logger.debug "Close connection #{object_id} #{reason}"
     end
 
     def error
-      @logger.info "Failure in #{Time.now-@start}s"
+      @logger.info "Failure in #{Time.now - @start}s"
       send_data "HTTP/1.1 500 Internal Server Error\nContent-Type: text/html\nConnection: close\n\n"
       close_connection_after_writing
     end

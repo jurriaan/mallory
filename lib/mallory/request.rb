@@ -2,14 +2,13 @@ require 'webrick'
 
 module Mallory
   class Request
-
     attr_accessor :protocol
 
     def initialize(data, logger)
       @logger = logger
       line = data.match(/([A-Z]{3,8})\s(?:(http\w*):\/\/)*(?:(\w*):*(\d{2,5})*)(\/{0,1}.*)\sHTTP/)
       method = line[1]
-      @protocol = "http"
+      @protocol = 'http'
       host = line[3] || data.match(/Host:\s(.*)\n/)[1]
       port = line[4]
       path = line[5]
@@ -29,7 +28,7 @@ module Mallory
     end
 
     def host
-      @request['host'].split(":")[0]
+      @request['host'].split(':')[0]
     end
 
     def method
@@ -45,6 +44,5 @@ module Mallory
     def body
       @body
     end
-
   end
 end

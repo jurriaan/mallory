@@ -1,8 +1,7 @@
 module Mallory
   class Response
-
-    def initialize http, logger
-      @logger = logger #TODO: unsure if logger is needed in plain data structure
+    def initialize(http, logger)
+      @logger = logger # TODO: unsure if logger is needed in plain data structure
       @http = http
     end
 
@@ -22,7 +21,7 @@ module Mallory
       headers = []
       @http.response_header.each do |header|
         next if header[0].match(/^X_|^VARY|^VIA|^SERVER|^TRANSFER_ENCODING|^CONNECTION/)
-        header_name = "#{header[0].downcase.capitalize.gsub('_','-')}"
+        header_name = "#{header[0].downcase.capitalize.gsub('_', '-')}"
         case header[1]
         when Array
           header[1].each do |header_value|
@@ -32,8 +31,8 @@ module Mallory
           headers << "#{header_name}: #{header[1]}"
         end
       end
-      headers << "Connection: close"
-      return headers.join("\n")
+      headers << 'Connection: close'
+      headers.join("\n")
     end
   end
 end

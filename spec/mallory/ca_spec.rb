@@ -3,10 +3,9 @@ require 'mallory/ssl/ca'
 require 'mallory/ssl/certificate'
 
 describe Mallory::SSL::CA do
+  let(:domain) { 'example.com' }
 
-  let(:domain) { "example.com" }
-
-  before(:each) do 
+  before(:each) do
     @crt = <<eos
 -----BEGIN CERTIFICATE-----
 MIIBrjCCAWqgAwIBAgIJAI9Jet0z2WxsMA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNV
@@ -41,16 +40,15 @@ eos
     FileUtils.remove_entry_secure @dir
   end
 
-  it "Reads a cert from a file" do
+  it 'Reads a cert from a file' do
     Mallory::SSL::CA.new(@crt_file, @key_file).to_pem.should eq(@crt)
   end
 
-  it "Signs a given csr" do
+  it 'Signs a given csr' do
     key, csr = Mallory::SSL::Certificate.csr(domain)
     ca = Mallory::SSL::CA.new(@crt_file, @key_file)
     cert = ca.sign(csr)
     cert.subject.should eq(OpenSSL::X509::Name.parse "/CN=#{domain}")
     Mallory::SSL::Certificate.new(key, cert).cert
   end
-
 end

@@ -1,23 +1,21 @@
 module Mallory
   module Backend
     class File
-=begin
-It would be cool to add signal trap to refresh proxy list when file contents change
-(with initial validation, so if file is malformed, old list stays)
-=end
+      # It would be cool to add signal trap to refresh proxy list when file contents change
+      # (with initial validation, so if file is malformed, old list stays)
       def initialize(filename)
         @proxies = []
         begin
           lines = ::File.readlines(filename)
-          raise if lines.nil?
-          raise if lines.empty?
+          fail if lines.nil?
+          fail if lines.empty?
         rescue
-          raise("Proxy file missing or empty")
+          raise('Proxy file missing or empty')
         end
         lines.each do |line|
           if line.strip.match(/.*:\d{2,6}/)
             @proxies << line.strip
-          else raise("Wrong format") end
+          else fail('Wrong format') end
         end
       end
 
@@ -28,7 +26,6 @@ It would be cool to add signal trap to refresh proxy list when file contents cha
       def all
         @proxies
       end
-
     end
   end
 end

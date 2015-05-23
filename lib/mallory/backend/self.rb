@@ -1,7 +1,7 @@
 module Mallory
   module Backend
     class Self
-      def initialize()
+      def initialize
         @proxies = []
       end
 
@@ -12,7 +12,6 @@ module Mallory
       def all
         @proxies
       end
-
     end
   end
 end

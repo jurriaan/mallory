@@ -9,15 +9,14 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     trap(:INT) { EM.stop }
-    trap(:TERM){ EM.stop }
+    trap(:TERM) { EM.stop }
     Thread.new do
       Rack::Handler::WEBrick.run(
         Responder.new,
-        :Port => 6701,
-        :AccessLog => [],
-        :Logger => WEBrick::Log::new("/dev/null", 7))
+        Port: 6701,
+        AccessLog: [],
+        Logger: WEBrick::Log.new('/dev/null', 7))
     end
     sleep 3
   end
-
 end

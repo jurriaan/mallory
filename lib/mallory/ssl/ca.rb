@@ -2,7 +2,7 @@
 module Mallory
   module SSL
     class CA
-      def initialize crt, key
+      def initialize(crt, key)
         @crt = OpenSSL::X509::Certificate.new(File.read(crt))
         @key = OpenSSL::PKey::RSA.new(File.read(key))
       end
@@ -11,12 +11,12 @@ module Mallory
         @crt.to_pem
       end
 
-      def sign csr
+      def sign(csr)
         cert = OpenSSL::X509::Certificate.new
-        cert.serial = 12158693495562452430+rand(10000)
-        cert.version = 0 #2
+        cert.serial = 12_158_693_495_562_452_430 + rand(10_000)
+        cert.version = 0 # 2
         cert.not_before = Time.now - 3600
-        cert.not_after = Time.now + 365*24*3600
+        cert.not_after = Time.now + 365 * 24 * 3600
         cert.subject = csr.subject
         cert.public_key = csr.public_key
         cert.issuer = @crt.subject
@@ -30,7 +30,6 @@ module Mallory
 
         cert.sign @key, OpenSSL::Digest::SHA1.new
       end
-
     end
   end
 end

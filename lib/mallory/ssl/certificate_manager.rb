@@ -1,22 +1,18 @@
 module Mallory
   module SSL
     class CertificateManager
-
-      def initialize storage, factory
+      def initialize(storage, factory)
         @storage = storage
         @factory = factory
       end
 
-      def get domain
+      def get(domain)
         key = @storage.get(domain)
-        if not key.nil?
-          return key
-        end
+        return key unless key.nil?
         key = @factory.get(domain)
         @storage.put(key)
-        return key
+        key
       end
-
     end
   end
 end

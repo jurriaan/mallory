@@ -7,45 +7,45 @@ require 'mallory'
 require 'optparse'
 require 'logging'
 
-#ARGV << '--help' if ARGV.empty?
+# ARGV << '--help' if ARGV.empty?
 
 options = {}
 OptionParser.new do |opts|
-  opts.banner = "Usage: proxybalancer [options]"
+  opts.banner = 'Usage: proxybalancer [options]'
 
-  opts.on("-p", "--port PORT", Integer, "Port to listen on (default 9999)") do |v|
+  opts.on('-p', '--port PORT', Integer, 'Port to listen on (default 9999)') do |v|
     options[:port] = v
   end
 
-  opts.on("-b", "--backend BACKEND", String, "Backend to use (default 'file://proxies.txt')") do |v|
+  opts.on('-b', '--backend BACKEND', String, "Backend to use (default 'file://proxies.txt')") do |v|
     options[:backend] = v
   end
 
-  opts.on("-cac", "--certificate-authority-cert CERT", String, "CA cert (default './keys/ca.crt')") do |v|
+  opts.on('-cac', '--certificate-authority-cert CERT', String, "CA cert (default './keys/ca.crt')") do |v|
     options[:ca_cert] = v
   end
 
-  opts.on("-cak", "--certificate-authority-key KEY", String, "CA key (default './keys/ca.key')") do |v|
+  opts.on('-cak', '--certificate-authority-key KEY', String, "CA key (default './keys/ca.key')") do |v|
     options[:ca_key] = v
   end
 
-  opts.on("-ct", "--connect-timeout SECONDS", Integer, "Proxy connect timeout (default 2s)") do |v|
+  opts.on('-ct', '--connect-timeout SECONDS', Integer, 'Proxy connect timeout (default 2s)') do |v|
     options[:ct] = v
   end
 
-  opts.on("-it", "--inactivity-timeout SECONDS", Integer, "Proxy inactivity timeout (default 2s)") do |v|
+  opts.on('-it', '--inactivity-timeout SECONDS', Integer, 'Proxy inactivity timeout (default 2s)') do |v|
     options[:it] = v
   end
 
-  opts.on("-l", "--activity-log LOGFILE", String, "Log events & debug (default STDOUT)") do |v|
+  opts.on('-l', '--activity-log LOGFILE', String, 'Log events & debug (default STDOUT)') do |v|
     options[:activity_log] = v
   end
 
-  opts.on("-r", "--request-log LOGFILE", String, "Log requests (default none)") do |v|
+  opts.on('-r', '--request-log LOGFILE', String, 'Log requests (default none)') do |v|
     options[:request_log] = v
   end
 
-  opts.on("-v", "--verbose", "Run in debug mode") do |v|
+  opts.on('-v', '--verbose', 'Run in debug mode') do |v|
     options[:verbose] = v
   end
 end.parse!
@@ -53,16 +53,16 @@ end.parse!
 def get_logger(activity_log, request_log, verbose)
   # https://github.com/TwP/logging/blob/master/lib/logging/layouts/pattern.rb
   Logging.init :request, :debug, :info
-  layout = Logging::Layouts::Pattern.new({ :pattern => "%d %-5l : %m\n"})
+  layout = Logging::Layouts::Pattern.new(pattern: "%d %-5l : %m\n")
   logger = Logging.logger['mallory']
 
   activity_appender = Logging.appenders.stdout
-  activity_appender = Logging.appenders.file(activity_log) if not activity_log.nil?
+  activity_appender = Logging.appenders.file(activity_log) unless activity_log.nil?
   activity_appender.layout = layout
   activity_appender.level = verbose ? :debug : :info
   logger.add_appenders(activity_appender)
-  
-  if not request_log.nil?
+
+  unless request_log.nil?
     request_appender = Logging.appenders.file(request_log)
     request_appender.layout = layout
     request_appender.level = :request
@@ -74,10 +74,10 @@ end
 
 config = Mallory::Configuration.register do |c|
   c.logger = get_logger(options.delete(:activity_log), options.delete(:request_log), options.delete(:verbose))
-  c.backend = Mallory::Backend::Self.new()
-  ca = options.has_key?(:ca_cert) ? Mallory::SSL::CA.new(options.delete(:ca_cert), options.delete(:ca_key)) : Mallory::SSL::CA.new("./keys/ca.crt", "./keys/ca.key")
+  c.backend = Mallory::Backend::Self.new
+  ca = options.key?(:ca_cert) ? Mallory::SSL::CA.new(options.delete(:ca_cert), options.delete(:ca_key)) : Mallory::SSL::CA.new('./keys/ca.crt', './keys/ca.key')
   cf = Mallory::SSL::CertificateFactory.new(ca)
-  st = Mallory::SSL::MemoryStorage.new()
+  st = Mallory::SSL::MemoryStorage.new
   c.certificate_manager = Mallory::SSL::CertificateManager.new(cf, st)
   c.connect_timeout = options.delete(:connect_timeout) || 2
   c.inactivity_timeout = options.delete(:inactivity_timeout) || 2

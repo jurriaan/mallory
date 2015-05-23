@@ -2,16 +2,16 @@ require 'eventmachine'
 
 $stdout.sync = true
 
-Signal.trap("INT")  { puts "Gracefully exiting"; EventMachine.stop }
-Signal.trap("TERM") { puts "Gracefully exiting"; EventMachine.stop }
+Signal.trap('INT')  { puts 'Gracefully exiting'; EventMachine.stop }
+Signal.trap('TERM') { puts 'Gracefully exiting'; EventMachine.stop }
 # Signal.trap("USR1") { puts "Reloading log files" }
 
-EM.kqueue if EM.kqueue? #osx
-EM.epoll  if EM.epoll? #linux
+EM.kqueue if EM.kqueue? # osx
+EM.epoll  if EM.epoll? # linux
 
 module Mallory
   class Server
-    def initialize config
+    def initialize(config)
       @logger = config.logger
       @port = config.port
       @request_builder = Mallory::RequestBuilder.new(config)
@@ -21,10 +21,10 @@ module Mallory
     end
 
     def start!
-      EventMachine.run {
-        @logger.info "Starting mallory"
+      EventMachine.run do
+        @logger.info 'Starting mallory'
         EventMachine.start_server '127.0.0.1', @port, Mallory::Connection, @request_builder, @proxy_builder, @logger, @certificate_manager
-      }
+      end
     end
   end
 end

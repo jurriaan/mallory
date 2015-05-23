@@ -7,9 +7,7 @@ module Mallory
     @settings = {}
 
     def self.register
-      if block_given?
-        yield(self)
-      end
+      yield(self) if block_given?
       self
     end
 

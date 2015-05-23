@@ -24,7 +24,7 @@ module Mallory
       submit
     end
 
-    def perform request
+    def perform(request)
       @method = request.method.to_s
       @uri = request.uri
       @request_headers = request.headers
@@ -32,30 +32,28 @@ module Mallory
       resubmit
     end
 
-    def send_data data
+    def send_data(data)
       @response << data
     end
 
-    def response
-      @response
-    end
+    attr_reader :response
 
     def options
       options = {
-        :connect_timeout => @connect_timeout,
-        :inactivity_timeout => @inactivity_timeout,
+        connect_timeout: @connect_timeout,
+        inactivity_timeout: @inactivity_timeout
       }
       unless @proxy.nil?
         options[:proxy] = {
-          :host => @proxy.split(':')[0],
-          :port => @proxy.split(':')[1]
+          host: @proxy.split(':')[0],
+          port: @proxy.split(':')[1]
         }
       end
-      return options
+      options
     end
 
     def submit
-      @retries+=1
+      @retries += 1
       if @retries > MAX_ATTEMPTS
         fail
         return
@@ -63,16 +61,16 @@ module Mallory
       via = " via #{@proxy}" unless @proxy.nil?
       @logger.debug "Attempt #{@retries} - #{@method.upcase} #{@uri} #{via}"
       if [:post, :put].include?(@method)
-        request_params = {:head => @headers, :body => @body}
+        request_params = { head: @headers, body: @body }
       else
-        request_params = {:head => @headers}
+        request_params = { head: @headers }
       end
       http = EventMachine::HttpRequest.new(@uri, options).send(@method, request_params)
-      http.errback {
+      http.errback do
         @logger.debug "Attempt #{@retries} - Failed"
         resubmit
-      }
-      http.callback {
+      end
+      http.callback do
         @logger.debug "Attempt #{@retries} - Success"
         response = @response_builder.build(http)
         @logger.request response.body
@@ -85,10 +83,10 @@ module Mallory
           send_data "\r\n\r\n"
           send_data response.body
           @logger.debug "Send content #{response.body.length} bytes"
-          @logger.info "Success (#{Time.now-@start}s, #{@retries} attempts)"
+          @logger.info "Success (#{Time.now - @start}s, #{@retries} attempts)"
         end
-        self.succeed
-      }
+        succeed
+      end
     end
   end
 end
