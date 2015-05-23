@@ -20,7 +20,7 @@ module Mallory
     def headers
       headers = []
       @http.response_header.each do |header|
-        next if header[0].match(/^X_|^VARY|^VIA|^SERVER|^TRANSFER_ENCODING|^CONNECTION/)
+        next if header[0].match(/^TRANSFER_ENCODING|^CONNECTION/)
         header_name = "#{header[0].downcase.capitalize.gsub('_', '-')}"
         case header[1]
         when Array
